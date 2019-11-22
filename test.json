@@ -1,0 +1,385 @@
+{
+    "issue_dashboard": {
+        "showInDrawer": true,
+        "drawerInfo": {
+            "title": "dashboard",
+            "group": "issues"
+        },
+        "img": "issue/dashboard.jpg",
+        "hotspots": [{
+            "x": 1300,
+            "y": 57,
+            "w": 92,
+            "h": 45,
+            "link": "issue_newRootIssue",
+            "id": "9f3f6733-d963-47d9-a516-441603348c92"
+        }, {
+            "type": "global",
+            "name": "menu_home"
+        }, {
+            "type": "global",
+            "name": "menu_assessment"
+        }, {
+            "type": "global",
+            "name": "globalSearch"
+        }, {
+            "type": "global",
+            "name": "menu_event"
+        }, {
+            "type": "global",
+            "name": "menu_issue"
+        }, {
+            "x": 260,
+            "y": 57,
+            "w": 100,
+            "h": 38,
+            "link": "issue_dashboard_IMB",
+            "id": "7cdabcbf-4be0-4bc8-80b3-062265f18c1d"
+        }, {
+            "x": 365,
+            "y": 57,
+            "w": 270,
+            "h": 38,
+            "link": "issue_dashboard_EC",
+            "id": "55f1cddb-67c5-4c72-9aea-e5329d94ba0d"
+        }, {
+            "x": 5,
+            "y": 205,
+            "w": 1390,
+            "h": 73,
+            "link": "issues_effectiveness_prepare",
+            "id": "2b28e1de-d561-4d50-b708-fce6055c168b"
+        }, {
+            "x": 5,
+            "y": 278,
+            "w": 1390,
+            "h": 73,
+            "link": "issues_causalAnalysis_prepare",
+            "id": "6a2005b2-f332-4d8b-97bb-9aef23a55d79"
+        }, {
+            "x": 5,
+            "y": 350,
+            "w": 1390,
+            "h": 73,
+            "link": "issue_correspondenceStub",
+            "id": "e6f20462-4a15-47cb-bc4d-a54d5a28c5a9"
+        }, {
+            "x": 5,
+            "y": 423,
+            "w": 1390,
+            "h": 73,
+            "link": "issues_CAP_approval_nonApproverView",
+            "id": "17d8bfcc-a179-422f-8aec-bc06a02c3e12"
+        }, {
+            "x": 5,
+            "y": 496,
+            "w": 1390,
+            "h": 73,
+            "link": "issue_level_IMB_nonIMBPerson",
+            "id": "0edc3ae9-3b4b-430d-bd8a-ff6f79fbb27c"
+        }],
+        "comments": [{
+            "type": "deleted",
+            "x": 400,
+            "y": 175,
+            "comment": "We don't know yet if these are the right columns to show - waiting on feedback from Product Owners.",
+            "id": "bd7c6136-93b1-409a-9386-183fecd9065b"
+        }, {
+            "type": "logic",
+            "x": 354,
+            "y": 56,
+            "comment": "Show a system-defined tab for each group the user is in - need to talk through this and define rules etc",
+            "id": "9b4bd714-6eb2-4e34-b012-f4c081a7f760"
+        }, {
+            "type": "comment",
+            "x": 1200,
+            "y": 230,
+            "comment": "FLAGS - specific data would cause flags to show up on the grid and on the cards. NTS comes from when EC says the issue is NTS reportable etc.",
+            "id": "de36e200-125a-467b-a829-08ae1cda7114"
+        }, {
+            "type": "comment",
+            "x": 1200,
+            "y": 230,
+            "comment": "A new comment added in the new data which should be merged into the old data",
+            "id": "de36e200-125a-467b-a829-08bc1cfa9119"
+        }],
+        "id": "5b3a3e74-f8e3-4a38-8f2e-680eaaa21770"
+    },
+    
+    "issue_dashboard_EC": {
+        "img": "issue/dashboard_EC.jpg",
+        "hotspots": [{
+            "x": 1300,
+            "y": 57,
+            "w": 92,
+            "h": 45,
+            "link": "issue_newRootIssue",
+            "id": "2fa98cf2-4df6-4861-90e3-d53fb2245211"
+        }, {
+            "type": "global",
+            "name": "menu_home"
+        }, {
+            "type": "global",
+            "name": "menu_assessment"
+        }, {
+            "type": "global",
+            "name": "globalSearch"
+        }, {
+            "type": "global",
+            "name": "menu_event"
+        }, {
+            "type": "global",
+            "name": "menu_issue"
+        }, {
+            "x": 45,
+            "y": 57,
+            "w": 100,
+            "h": 38,
+            "link": "issue_dashboard",
+            "id": "393ec6df-db59-4a95-805f-9ca74564ffad"
+        }, {
+            "x": 260,
+            "y": 57,
+            "w": 100,
+            "h": 38,
+            "link": "issue_dashboard_IMB",
+            "id": "b04a7a65-3eee-4805-a540-0ea5fc9fa402"
+        }, {
+            "x": 5,
+            "y": 205,
+            "w": 1390,
+            "h": 73,
+            "link": "issues_causalAnalysis_prepare",
+            "id": "6448637a-4123-4de0-ab27-0e47eb5e0638"
+        }, {
+            "x": 5,
+            "y": 278,
+            "w": 1390,
+            "h": 73,
+            "link": "issue_level_IMB_nonIMBPerson",
+            "id": "b5cc029e-a77d-46a0-b7c9-c8edeed9f32d"
+        }, {
+            "x": 5,
+            "y": 350,
+            "w": 1390,
+            "h": 73,
+            "link": "issues_complete_done",
+            "id": "64ceb673-50e1-4d36-95ff-6810bdd8d2f9"
+        }],
+        "comments": [{
+            "x": 190,
+            "y": 120,
+            "comment": "If we cannot make the EC tab a default tab for people in the EC group, then we need to have a search query that can return all the issues EC is following. Could that query involve the EC flag somehow?",
+            "id": "50181d2a-73b8-4286-bf18-ac5d17bef774"
+        }, {
+            "x": 190,
+            "y": 120,
+            "comment": "a new comment",
+            "id": "50181d2a-73b8-4286-bf18-ac5d17fah721"
+        }],
+        "scrollZones": [{
+            "id": "new scrollzone",
+            "x": 195,
+            "y": 100,
+            "w": 844,
+            "h": 603,
+            "img": "issue/_forms/form1_rootIssue.jpg",
+            "maxImgWidth": 450,
+            "hotspots": [{
+                "x": 500,
+                "y": 745,
+                "w": 148,
+                "h": 38,
+                "link": "issue_info",
+                "id": "dfbf019b-8155-47c0-a9b5-1728a4ee35d6"
+            }],
+            "comments": [{
+                "type": "notification",
+                "x": 470,
+                "y": 755,
+                "comment": "Send notification to Issue Owner that a new issue has been assigned to them. Simple notification, no data, no eDCRO",
+                "id": "fcf6dd00-52cd-41d0-825c-8df18657a269"
+            }]
+        }],
+        "id": "ec7c76c0-2efd-4c7e-9169-63ee5417ca78"
+    }, 
+
+    "issue_newSlide": {
+        "img": "issue/newSlideNeedsToBeAddedToOldData.jpg",
+        "hotspots": [{
+            "x": 1300,
+            "y": 57,
+            "w": 92,
+            "h": 45,
+            "link": "issue_newRootIssue",
+            "id": "2fa98cf2-4df6-4861-90e3-d53fb2245211"
+        }, {
+            "type": "global",
+            "name": "menu_home"
+        }, {
+            "type": "global",
+            "name": "menu_assessment"
+        }, {
+            "type": "global",
+            "name": "globalSearch"
+        }, {
+            "type": "global",
+            "name": "menu_event"
+        }, {
+            "type": "global",
+            "name": "menu_issue"
+        }, {
+            "x": 45,
+            "y": 57,
+            "w": 100,
+            "h": 38,
+            "link": "issue_dashboard",
+            "id": "393ec6df-db59-4a95-805f-9ca74564ffad"
+        }, {
+            "x": 260,
+            "y": 57,
+            "w": 100,
+            "h": 38,
+            "link": "issue_dashboard_IMB",
+            "id": "b04a7a65-3eee-4805-a540-0ea5fc9fa402"
+        }, {
+            "x": 5,
+            "y": 205,
+            "w": 1390,
+            "h": 73,
+            "link": "issues_causalAnalysis_prepare",
+            "id": "6448637a-4123-4de0-ab27-0e47eb5e0638"
+        }, {
+            "x": 5,
+            "y": 278,
+            "w": 1390,
+            "h": 73,
+            "link": "issue_level_IMB_nonIMBPerson",
+            "id": "b5cc029e-a77d-46a0-b7c9-c8edeed9f32d"
+        }, {
+            "x": 5,
+            "y": 350,
+            "w": 1390,
+            "h": 73,
+            "link": "issues_complete_done",
+            "id": "64ceb673-50e1-4d36-95ff-6810bdd8d2f9"
+        }],
+        "comments": [{
+            "x": 190,
+            "y": 120,
+            "comment": "If we cannot make the EC tab a default tab for people in the EC group, then we need to have a search query that can return all the issues EC is following. Could that query involve the EC flag somehow?",
+            "id": "50181d2a-73b8-4286-bf18-ac5d17bef774"
+        }],
+        "id": "ec7c76c0-2efd-4c7e-9169-63ee5417jg89"
+    },
+
+    "issue_newRootIssue": {
+        "img": "issue/new_rootIssue.jpg",
+        "hotspots": [{
+            "type": "global",
+            "name": "backToIssueDashboard"
+        }],
+        "scrollZones": [{
+            "id": "rootIssue_form1",
+            "x": 195,
+            "y": 100,
+            "w": 844,
+            "h": 603,
+            "img": "issue/_forms/form1_rootIssue.jpg",
+            "maxImgWidth": 450,
+            "hotspots": [{
+                "x": 500,
+                "y": 745,
+                "w": 148,
+                "h": 38,
+                "link": "issue_info",
+                "id": "dfbf019b-8155-47c0-a9b5-1728a4ee35d6"
+            }],
+            "comments": [{
+                "type": "notification",
+                "x": 470,
+                "y": 755,
+                "comment": "Send notification to Issue Owner that a new issue has been assigned to them. Simple notification, no data, no eDCRO",
+                "id": "fcf6dd00-52cd-41d0-825c-8df18657a269"
+            }]
+        }],
+        "id": "6d7e94a7-0ef7-4482-8399-6bb7eebcc26d"
+    },
+    "issue_owner": {
+        "img": "issue/owner.jpg",
+        "hotspots": [{
+            "type": "global",
+            "name": "backToIssueDashboard"
+        }, {
+            "type": "global",
+            "name": "issue_overflowMenu_preDeterm"
+        }, {
+            "type": "global",
+            "name": "issue_summary"
+        }, {
+            "type": "global",
+            "name": "issue_determination_step0"
+        }, {
+            "type": "global",
+            "name": "issue_determination_step1"
+        }, {
+            "type": "global",
+            "name": "issue_determination_step2"
+        }, {
+            "type": "global",
+            "name": "issue_determination_step3"
+        }, {
+            "type": "global",
+            "name": "issue_determination_step4"
+        }],
+        "comments": [{
+            "type": "logic",
+            "x": 495,
+            "y": 160,
+            "comment": "Show step 1 if the Issue owner was not entered when the issue was created using the stub card.",
+            "id": "b9d04491-4c24-499c-9107-38bc5329e427"
+        }, {
+            "type": "logic",
+            "x": 495,
+            "y": 300,
+            "comment": "Issue workflow cannot move forward if the Issue owner is not assigned - no one has been assigned to fill out the forms and submit to IMB - so disable the upcoming steps until IO is assigned.",
+            "id": "8eaceaa3-0c99-4623-a9ab-99da520cc8ad"
+        }],
+        "scrollZones": [{
+            "id": "issue_form0",
+            "x": 537,
+            "y": 100,
+            "w": 500,
+            "h": 603,
+            "img": "issue/_forms/form0_issueOwner.jpg",
+            "maxImgWidth": 450,
+            "hotspots": [{
+                "x": 274,
+                "y": 164,
+                "w": 200,
+                "h": 38,
+                "link": "issue_info",
+                "id": "7e6cd643-56f2-4c40-b377-39898248ab49"
+            }],
+            "comments": []
+        }, {
+            "id": "new scrollZone within existing scrollZone array",
+            "x": 537,
+            "y": 100,
+            "w": 500,
+            "h": 603,
+            "img": "issue/_forms/form0_issueOwner.jpg",
+            "maxImgWidth": 450,
+            "hotspots": [{
+                "x": 274,
+                "y": 164,
+                "w": 200,
+                "h": 38,
+                "link": "issue_info",
+                "id": "7e6cd643-56f2-4c40-b377-39898248ab49"
+            }],
+            "comments": []
+        }],
+        "id": "fdaf7411-b799-4402-8ed1-3b3517f1e6bd"
+    }
+}

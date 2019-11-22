@@ -1,0 +1,11 @@
+_archive/
+_designFiles/
+migration/
+node_modules/
+public/data/*.json
+public/data/_log/*.json
+Public/data/_log/*/
+public/img/*.jpg
+public/img/*.png
+public/img/*/
+public/data/merge/*.json

@@ -1,0 +1,1414 @@
+:root{
+
+    /* general colors */
+    --color-extraLight:             #e5e9f1;
+    --color-light:                  #cbcfd8;
+    --color-mediumLight:            #a3a7b1;
+    --color-medium:                 #71798d;
+    --color-mediumDark:             #565f75;
+    --color-dark:                   #363e50;
+    --color-darker:                 #1f2532;
+    --color-darkest:                #1c222e;
+
+    /* hotspots */
+    --color-hotspot-bg:             rgba( 16, 123, 185, 0.4 );
+    --color-hotspot-border:         rgba( 16, 123, 185, 0.7 );
+    --color-hotspot-global-bg:      rgba( 16, 185, 78, 0.4 );
+    --color-hotspot-global-border:  rgba( 16, 185, 78, 0.7 );
+
+    /* comments */
+    --color-comment-50:             rgba( 206, 31, 245, 0.5 );
+    --color-comment-100:            rgba( 206, 31, 245, 1 );
+    --color-question-50:            rgba( 140, 140, 140, 0.5 );
+    --color-question-100:           rgba( 140, 140, 140, 1 );
+    --color-logic-50:               rgba( 154, 69, 24, 0.5 );
+    --color-logic-100:              rgba( 154, 69, 24, 1 );
+    --color-notification-50:        rgba( 25, 173, 155, 0.5 );
+    --color-notification-100:       rgba( 25, 173, 155, 1 );
+
+    /* status */
+    --color-status-green:             #60be4e;
+    --color-status-yellow:            #f5a623;
+    --color-status-red:               #de2333;
+    --color-status-blue:              #4d4bd8;
+
+    /* inputs */
+    --border-color:                     var( --color-light );
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", 'Helvetica', 'Arial', sans-serif;
+}
+
+body[data-mode='build'] .hotspot {
+    background: var( --color-hotspot-bg );
+    border: solid 1px var( --color-hotspot-border );
+}
+
+body[data-mode='build'] .hotspot_global {
+    background: var( --color-hotspot-global-bg );
+    border: solid 1px var( --color-hotspot-global-border );
+}
+
+body[data-disabledHotspots='true'] .hotspot, 
+body[data-disabledHotspots='true'] .hotspot_global{
+    pointer-events: none;
+} 
+
+/* when adding a comment give users an indication through the border */
+body::after{
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: calc( 100vh - 44px );
+    border: solid 1px transparent;
+    transition: border 0.3s;
+    box-sizing: border-box;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+body.addingAnnotation::after{
+    border-color: var( --color-status-green );
+    border-width: 10px;
+}
+    body.addingAnnotation .exitMode{
+        transform: translate( 0 );
+        opacity: 1;
+        background: var( --color-status-green );
+    }
+body.addingComment::after{
+    border-color: var( --color-status-blue );
+    border-width: 10px;
+}
+    body.addingComment .exitMode{
+        transform: translate( 0 );
+        opacity: 1;
+        background: var( --color-status-blue );
+    }
+body.addingHotspot::after{
+    border-color: var( --color-status-yellow );
+    border-width: 10px;
+}
+    body.addingHotspot .exitMode{
+        transform: translate( 0 );
+        opacity: 1;
+        background: var( --color-status-yellow );
+    }
+
+.slidesAndCommentsWrap {
+    /*display: flex;*/
+    height: calc( 100vh - 45px );
+    overflow-y: scroll;
+}
+
+.slidesAndCommentsWrap.hideComments .commentDrawer {
+    display: none;
+}
+    .slidesAndCommentsWrap.hideComments .metadata .meta-comments {
+        color: inherit;
+        background: var( --color-dark );
+    }
+        .slidesAndCommentsWrap.hideComments .metadata .meta-comments::before {
+            display: none;
+        }
+    .slidesAndCommentsWrap.hideComments .metadata .meta-comments .count {
+        background: var( --color-medium );
+        color: var( --color-darker );
+    }
+
+
+#protoWrap {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+#protoWrap::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* background: rgba(22, 30, 42, 0.75); */
+    z-index: 1050;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+#protoWrap.overlayBackground::after {
+    opacity: 1
+}
+
+.item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /*margin-bottom: 2em;*/
+    opacity: 0;
+    counter-reset: comment;
+}
+    #protoWrap > .item:first-of-type{
+        position: relative;
+    }
+
+.item.active {
+    z-index: 1000;
+    opacity: 1;
+}
+
+.image {
+    display: block;
+    max-width: 1400px;
+}
+
+/*
+    this is needed for drag event to calculate drag dX and dY correctly
+*/
+.hotspots,
+.comments {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hotspot {
+    position: absolute;
+    cursor: pointer;
+    /*background: rgba( 16, 123, 185, 0.2 );*/
+    transition: box-shadow 0.2s;
+    z-index: 5000;
+}
+
+.hotspot.pulse {
+    box-shadow: 0px 0px 10px 3px var( --color-hotspot-bg );
+}
+
+.metadata {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    padding: 0.75em 3em 0.75em 80px;
+    font-size: 11px;
+    letter-spacing: 0.025em;
+    color: var( --color-medium );
+    background: var( --color-darker );
+    border-top: solid 1px #ccc;
+    z-index: 6000;
+}
+
+.metadata .meta-comments {
+    order: 3;
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: 10px;
+    padding: 0.5em 1em;
+    border-radius: 1em;
+    background: var( --color-light );
+    color: var( --color-status-blue );
+    cursor: pointer;
+}
+    .metadata .meta-comments::before{
+        content: '';
+        position: absolute;
+        background: inherit;
+        width: 100%;
+        height: 20px;
+        top: 10px;
+        left: 0;
+        transform: translateY(-100%);
+        z-index: -1;
+    }
+
+.metadata .meta-comments .count {
+    margin-right: 0.25em;
+    background: var( --color-status-blue );
+    color: var( --color-light );
+}
+
+.metadata .timestamp{
+    color: inherit;
+}
+
+.metadata .status {
+    display: flex;
+    align-items: center;
+    margin-left: 2em;
+}
+    body[data-mode='build'] .metadata .status {
+        cursor: pointer;
+    }
+
+.metadata .status-indicator {
+    display: block;
+    margin-left: 0.25rem;
+    font-size: 0;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+
+}
+
+.metadata .status[ data-status='approved'] .status-indicator {
+    background-color: var( --color-status-green );
+}
+
+.metadata .status[ data-status='inProgress'] .status-indicator {
+    background-color: var( --color-status-blue );
+}
+
+.metadata .status[ data-status='conceptual'] .status-indicator {
+    background-color: var( --color-status-yellow );
+}
+
+.metadata .status[ data-status='onHold'] .status-indicator{
+    background-color: var( --color-status-red );
+}
+
+.metadata .status[ data-status='noStatus'] .status-indicator,
+.metadata .status[ data-status='No Status'] .status-indicator {
+    border: solid 1px var( --color-medium );
+}
+
+/* status popup */
+.modal .statusOptions{
+    color: var( --color-mediumLight );
+}
+.modal .statusOptions [data-status='active']{
+    color: var( --color-dark );
+}
+    .modal .statusOptions .modal-input{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 0 -1em;
+        padding: 0.5em 1em;
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+    .modal .statusOptions .modal-input:hover{
+        background: var( --color-extraLight );
+    }
+    .modal .statusOptions .modal-input::before{
+        content: '';
+        position: relative;
+        margin-right: 1em;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+    .modal .statusOptions #approved::before{
+        background-color: var( --color-status-green );
+    }
+    
+    .modal .statusOptions #inProgress::before{
+        background-color: var( --color-status-blue );
+    }
+    
+    .modal .statusOptions #conceptual::before{
+        background-color: var( --color-status-yellow );
+    }
+    
+    .modal .statusOptions #onHold::before{
+        background-color: var( --color-status-red );
+    }
+    
+    .modal .statusOptions #noStatus::before{
+        border: solid 1px var( --color-medium );
+    }
+
+.count {
+    display: inline-block;
+    font-size: 1em;
+    font-weight: bold;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 1.55em;
+    background: var( --color-light );
+    color: var( --color-medium );
+}
+
+
+
+.commentDrawer {
+    position: fixed;
+    top: 3px;
+    right: 3px;
+    margin-left: auto;
+    height: calc(100vh - 40px);
+    padding-bottom: 40px;
+    background: var( --color-light );
+    border-radius: 10px;
+    z-index: 5000;
+    overflow-y: scroll;
+}
+    .commentDrawer::before{
+        content: 'Comments & Notes';
+        display: block;
+        padding: 20px 10px 10px 15px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        color: var( --color-mediumDark );
+    }
+
+.commentDrawer .comment {
+    position: relative;
+    width: 225px;
+    height: auto;
+    margin: 10px 10px 10px 20px;
+    padding: 10px 10px 10px 18px;
+    background: white;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    font-size: 12px;
+    letter-spacing: 0.025em;
+    line-height: 1.3em;
+    color: var( --color-medium );
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.commentDrawer .comment:not( .expanded )::before {
+    top: 50%;
+    left: 0;
+    width: 26px;
+    height: 26px;
+    transform: translate(-50%, -50%);
+}
+
+.commentDrawer .comment:not( .expanded )::after {
+    content: attr(data-commentnum);
+    top: 50%;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+}
+
+.commentDrawer .comment:not( .expanded ):hover {
+    transform: scale(1.025);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+}
+
+.commentDrawer .comment:not( .expanded ):hover::before {
+    transform: translate(-50%, -50%) scale(1.25);
+}
+
+
+.comment {
+    position: absolute;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    z-index: 5000;
+}
+
+.comment:not( .expanded )::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: calc(100% + 6px);
+    height: calc(100% + 6px);
+    border-radius: 50%;
+    background: var( --color-comment-50 );
+    transition: transform 0.3s;
+}
+
+.comment:not( .expanded )::after {
+    counter-increment: comment;
+    content: counter(comment);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 50%;
+    background: var( --color-comment-100 );
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.comment:not( .expanded ):hover::before {
+    transform: scale(1.25);
+}
+
+.comment-settings {
+    margin: 1em -10px;
+}
+
+.comment-content {
+    display: none;
+    position: relative;
+    width: 300px;
+    margin: 10px 0 0 10px;
+    padding: 2em;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 2px 5px 25px rgba(0, 0, 0, 0.25);
+    font-size: 12px;
+    line-height: 1.5em;
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Chrome */
+    overflow: hidden;
+}
+
+    .comment-content .comment-value{
+        font-size: 1.2em;
+        line-height: 1.5em;
+    }
+    .comment-value[contenteditable='true'] {
+        margin: -10px -10px 10px -10px;
+    }
+
+    .comment-content .actions {
+        margin: 2em -2em -2em;
+    }
+
+    /* not in edit mode */
+    .comment-content:not(.edit-mode){
+        padding-bottom: 5em;
+    }
+        .comment-content:not( .edit-mode ) .comment-value{
+            color: var( --color-medium );
+        }
+        .comment-content:not(.edit-mode) .timestamp{
+            position: absolute;
+            bottom: 1.4em;
+            left: 2em;
+        }
+        
+
+    /*
+        in edit mode
+    */
+    .comment-content.edit-mode .user{
+        bottom: auto;
+        transform: translateY(-1.85em);
+    }
+    .comment-content.edit-mode .comment-value{
+        padding: 1em 1.25em;
+        color: var( --color-dark );
+        border: solid 1px var( --border-color );
+        border-radius: 5px;
+        font-weight: 500;
+    }
+
+/*
+    expanded comment
+*/
+.comment.active {
+    z-index: 5050;
+}
+
+.comment.active .comment-content {
+    display: block;
+}
+
+.comment[data-pos='right'] .comment-content {
+    position: relative;
+    transform: translateX(-100%);
+    z-index: -1;
+}
+
+/* comment / note */
+.comment[data-type="comment"]::before {
+    background: var( --color-comment-50 );
+}
+
+.comment[data-type="comment"]::after {
+    background: var( --color-comment-100 );
+}
+
+/*
+.comment[data-type="comment"] .comment-content {
+    color: rgba(206, 31, 245, 1);
+}
+*/
+
+/* question */
+.comment[data-type="question"]::before {
+    background: var( --color-question-50 );
+}
+
+.comment[data-type="question"]::after {
+    background: var( --color-question-100 );
+}
+
+
+/* notification */
+.comment[data-type="notification"]::before {
+    background: var( --color-notification-50 );
+}
+
+.comment[data-type="notification"]::after {
+    background: var( --color-notification-100 );
+}
+
+/*
+.comment[data-type="notification"] .comment-content {
+    color: rgba(25, 173, 155, 1);
+}
+*/
+
+/* logic */
+.comment[data-type="logic"]::before {
+    background: var( --color-logic-50 );
+}
+
+.comment[data-type="logic"]::after {
+    background: var( --color-logic-100 );
+}
+
+/*
+.comment[data-type="logic"] .comment-content {
+    color: rgba(154, 69, 24, 1);
+}
+*/
+
+.scrollZone {
+    position: absolute;
+}
+
+.scrollZone img {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/*
+.scrollZone .hotspot.pulse {
+    box-shadow: inset 0px 0px 10px 3px rgba(16, 123, 185, 0.5);
+}
+*/
+
+.scrollZone_inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    overflow-y: overlay;
+    overflow-x: hidden;
+}
+
+/* 
+        this div inherits the full height of the image
+        allowing the hotspots div to also be the height of the image, not the height of the scrollZone
+        this is needed for drag/resizing hotspots to work within the scroll zone image size
+    */
+.scrollZone_inner_fullHeight {
+    position: relative;
+}
+
+.scrollZone_layer {
+    position: absolute;
+    z-index: 1000;
+}
+
+.overlay {
+    display: none;
+    position: absolute;
+    z-index: 2000;
+}
+
+.overlay img {
+    max-width: 100%;
+}
+
+.overlay.bottom .item {
+    top: auto;
+    bottom: 0;
+}
+
+.overlay.active {
+    display: block;
+}
+
+
+/* slide drawer */
+.slideDrawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 7000;
+}
+
+/* scrollbar styling */
+.slideDrawer ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: transparent;
+}
+
+.slideDrawer ::-webkit-scrollbar-thumb {
+    background: var( --color-mediumLight );
+    border-radius: 5px;
+}
+
+.slideDrawer_trigger {
+    position: absolute;
+    top: 0;
+    left: 1em;
+    width: 3em;
+    height: 3em;
+    background: var( --color-medium );
+    transform: translateY( -2.5em );
+    cursor: pointer;
+    border-top-left-radius: 1em;
+    border-top-right-radius: 1em;
+    transition: transform 0.5s;
+}
+    .slideDrawer_trigger:hover{
+        transform: translateY( -100% );
+    }
+
+.slideDrawer_trigger::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1em;
+    height: 1em;
+    transform: translate(-50%, -35%) rotate(-45deg);
+    border-top: solid 2px var( --color-darker );
+    border-right: solid 2px var( --color-darker );
+    transition: transform 0.3s;
+}
+
+.slideDrawer_inner {
+    display: flex;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
+    padding: 1em 0;
+    background: var( --color-medium );
+    border-top: solid 2px var( --color-medium );
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.25);
+    transition: transform 0.5s;
+}
+
+.slideDrawer_bucket {
+    display: flex;
+    position: relative;
+    padding: 2.5em 1em 0;
+}
+
+.slideDrawer_bucket#Features {
+    order: -1;
+    /* make the features the first one in the list */
+}
+
+.slideDrawer_bucket + .slideDrawer_bucket {
+    margin-left: 0.5em;
+}
+
+.slideDrawer_bucket_name {
+    position: absolute;
+    top: 0;
+    width: calc(100% - 2.5em);
+    margin: 0;
+    padding: 0.5em 1em;
+    background: var( --color-dark );
+    border-radius: 0.5em;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var( --color-medium );
+}
+
+.slideDrawer_item {
+    max-width: 180px;
+    min-width: 180px;
+    padding: 1em;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+    .slideDrawer_item:hover{
+        transform: scale( 1.05 );
+    }
+
+.slideDrawer_item + .slideDrawer_item {
+    margin-left: 0.75em;
+}
+
+.slideDrawer_item img {
+    width: 100%;
+    border: solid 1px var( --color-light );
+}
+
+.slideDrawer_item p {
+    margin: 0.25em 0;
+    text-align: center;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var( --color-medium );
+}
+
+/* drawer open */
+.slideDrawer.open .slideDrawer_inner {
+    transform: translateY(-100%);
+}
+
+.slideDrawer.open .slideDrawer_trigger {
+    transform: translateY(-274px);
+}
+
+.slideDrawer.open .slideDrawer_trigger::after {
+    transform: translate(-50%, -75%) rotate(135deg);
+}
+
+/*
+    modes and controls
+*/
+.modeControls {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 2.5rem;
+    background: var( --color-medium );
+    border-top-left-radius: 1em;
+    border-top-right-radius: 1em;
+    line-height: 2.5rem;
+    padding: 0 1em;
+    color: white;
+    z-index: 5000;
+}
+
+.modeControls-control {
+    position: relative;
+    padding: 0 0.25em;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+    .modeControls-control::before{
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: calc( 100% - 0.4em );
+        height: calc( 100% - 0.4em );
+        background: transparent;
+        border-radius: 0.5em;
+        transform: translate( -50%, -50% ) scale( 0.8 );
+        transition: transform 0.3s, background 0.3s;
+        z-index: -1;
+    }
+    .modeControls-control svg{
+        fill: var( --color-darker );
+    }
+
+.modeControls-control:hover::before {
+    transform: translate( -50%, -50% ) scale( 1 );
+    background: var( --color-mediumDark );
+}
+    .modeControls-control:hover svg {
+        fill: var( --color-mediumLight );
+    }
+
+.modeControls-control.active::before{
+    transform: translate( -50%, -50% ) scale( 1 );
+    background: var( --color-light );
+}
+    .modeControls-control.active svg {
+        fill: var( --color-status-blue );
+    }
+
+.modeControls-control .label {
+    display: none;
+}
+
+/*
+    editing elements
+*/
+.closeX {
+    display: block;
+    transform: rotate(45deg);
+    font-size: 2em;
+    color: var( --color-mediumLight );
+    cursor: pointer;
+}
+.exitMode{
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 47px;
+    z-index: 10000;
+    transform: translate( 50%, -50% );
+    opacity: 0;
+    transition: transform 0.3s, opacity 0.3s;
+}
+    .exitMode .closeX{
+        color: white;
+    }
+
+.newHotspotOptions{
+    display: flex;
+    justify-content: space-around;
+}
+    .newHotspotOptions .modal-input{
+        align-items: center;
+        padding: 0.5em 2em 1em;
+        border: solid 1px var( --border-color );
+        border-radius: 0.5em;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+        .newHotspotOptions .modal-input:hover{
+            background-color: var( --border-color );
+        }
+    .newHotspotOptions #global{
+        margin-top: 0;
+    }
+
+.globalHotspotList{
+    max-height: calc( 80vh - 55px );
+    margin: -1em;
+    padding: 1em;
+    overflow: scroll;
+}
+    .globalHotspotList-item{
+        display: flex;
+        align-items: center;;
+        padding: 1em;
+        color: var( --color-medium );
+        border-radius: 0.5em;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+        .globalHotspotList-item .button--icon{
+            margin-left: auto;
+            opacity: 0;
+            transform: translateX( 1em );
+            transition: opacity 0.3s, transform 0.3s;
+        }
+    .globalHotspotList-item:hover{
+        background: var( --color-extraLight );
+    }
+        .globalHotspotList-item:hover .button--icon{
+            opacity: 1;
+            transform: translateX( 0 );
+        }
+    .globalHotspotList-item--details{
+        font-size: 12px;
+        margin: 0;
+        color:  var( --color-medium );
+    }
+        .globalHotspotList-item--details + .globalHotspotList-item--details{
+            margin-top: 1em;
+        }
+
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10000;
+}
+
+.modal:not([ data-customPosition='true']) {
+    background: rgba(22, 30, 42, 0.75);
+    height: 100%;
+}
+
+.modal:not([ data-customPosition='true']) .modal-inner {
+    transform: translate(-50%, -50%);
+}
+
+.modal[ data-customPosition='true'] .modal-inner {
+    box-shadow: 2px 5px 25px rgba(0, 0, 0, 0.25);
+}
+
+.modal-inner {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0.5em 1em;
+    border-bottom: solid 1px var( --color-light );
+}
+
+.modal-header-title {
+    margin: 0;
+}
+
+.modal-header .closeX {
+    margin-left: auto;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 1em;
+}
+
+.modal .actions {
+    margin-top: 2em;
+}
+
+.toast {
+    position: fixed;
+    bottom: 3em;
+    left: 0.5em;
+    max-width: 20em;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+    background: white;
+    color: var( --color-medium );
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    text-transform: capitalize;
+    transition: transform 0.3s;
+    z-index: 11000;
+}
+
+.toast .icon{
+    position: absolute;
+    top: 50%;
+    left: 0.5em;
+    width: 40px;
+    height: 40px;
+    transform: translateY(-50%);
+}
+
+.toast-inner {
+    display: flex;
+    align-items: center;
+}
+
+.toast-inner .closeX {
+    margin-left: 1em;
+}
+
+.toast.transitionOut {
+    transform: translateY(10em);
+}
+
+.toast[data-state='success'] {
+    color: var( --color-status-green );
+}
+
+.toast[data-state='error'] {
+    color: var( --color-status-red );
+    padding-left: calc( 1em + 40px );
+}
+.toast[data-state='error'] .icon{
+    fill: var( --color-status-red );
+}
+
+.timestamp{
+    font-size: 11px;
+    color: var( --color-mediumLight );
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    margin: auto -1em -1em -1em;
+    padding: 1em 1.25em;
+    background: var( --color-extraLight );
+}
+
+.actions .button {
+    margin-left: auto;
+    border-color: var( --color-mediumLight );
+}
+.actions .button--textOnly:hover{
+    background: var( --color-mediumLight );
+}
+
+.button {
+    -webkit-appearance: none;
+    margin-left: auto;
+    padding: 0.5em 1em;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    background: transparent;
+    border: solid 1px var( --border-color );
+    color: var( --color-dark );
+    transition: background 0.3s, border 0.3s, color 0.3s;
+}
+
+.button:hover {
+    cursor: pointer;
+    background: white;
+    border-color: var( --color-darkest );
+    color: var( --color-darkest );
+}
+
+.button + .button{
+    margin-left: 0.75em;
+}
+
+.button--textOnly {
+    border: none;
+}
+    .button--textOnly:hover {
+        background: var( --color-extraLight );
+    }
+
+.button--icon{
+    padding: 0;
+    border: 0;
+    width: 40px;
+    height: 40px;
+}
+    .button--icon svg{
+        fill: var( --color-medium );
+    }
+    .button--icon + .button, .button--icon + .button--icon{
+        margin-left: 0.25em;
+    }
+
+
+.button.destructive {
+    color: var( --color-status-red );
+}
+
+.user{
+    display: inline-block;
+    position: absolute;
+    right: 1.75em;
+    bottom: 1em;
+    padding: 0.25em 0.75em;
+    background: var( --color-extraLight );
+    color: var( --color-medium );
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 10em;
+}
+
+[contenteditable='true'] {
+    display: block;
+}
+
+.modal-input {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.modal-input+.modal-input {
+    margin-top: 1em;
+}
+
+.modal-input .button--icon{
+    position: absolute;
+    top: 21px;
+    right: 6px;
+}
+
+.helpText{
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: 0.025em;
+    color: var( --color-mediumLight );
+    padding: 0.5em 0;
+}
+
+select {
+    position: relative;
+    -webkit-appearance: none;
+    padding: 0.5em 2em 0.6em 1em;
+    font-size: 1em;
+    background: transparent;
+    border: solid 1px var( --border-color );
+    color: var( --color-dark );
+}
+
+label{
+    font-size: 11px;
+    color: var( --color-medium );
+}
+
+label + input, label + select {
+    margin-top: 2px;
+}
+
+input{
+    font-size: 1em;
+    padding: 1em 1.25em;
+    border: solid 1px var( --border-color );
+    border-radius: 5px;
+}
+
+:focus {
+    outline: none;
+}
+
+::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var( --color-mediumLight );
+    font-style: italic;
+    opacity: 1;
+    /* Firefox */
+}
+
+::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: var( --color-mediumLight );
+    font-style: italic;
+}
+
+/* features */
+.item#features {
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.item#features>img {
+    margin: 0 auto;
+}
+
+@media(max-width: 1400px) {
+    .item#features>img {
+        max-width: 100%;
+    }
+
+    .item#features>.hotspots .hotspot {
+        left: auto !important;
+        right: 20px;
+        top: 3% !important;
+    }
+}
+
+@media(min-width: 1400px) {
+    .item#features>.hotspots .hotspot {
+        left: 50% !important;
+        transform: translateX(434px);
+    }
+}
+
+.item#features .metadata {
+    display: none;
+}
+
+.scrollZone#featureList {
+    width: 100% !important;
+    /* override the fixed px width */
+}
+
+@media(min-width: 1400px) {
+    .scrollZone#featureList {
+        margin-top: -1px;
+        border-top: solid 1px var( --border-color );
+    }
+}
+
+.scrollZone#featureList .features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-bottom: 5em;
+}
+
+@media(max-width: 1400px) {
+    .scrollZone#featureList .features {
+        padding: 0 2vw;
+    }
+}
+
+.scrollZone#featureList .controls {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 1em auto 2em;
+    padding: 0 3em;
+}
+
+.scrollZone#featureList .features_sort,
+.scrollZone#featureList .features_filter {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.scrollZone#featureList .features_sort>span,
+.scrollZone#featureList .features_filter>span {
+    font-size: 12px;
+    color: var( --color-medium );
+    margin-right: 0.5em;
+}
+
+.scrollZone#featureList .features_sort_option,
+.scrollZone#featureList .features_filter_option {
+    padding: 0.5em 1em;
+    margin: 0 0.25em;
+    border: solid 1px var( --border-color );
+    border-radius: 10em;
+    font-size: 12px;
+    color: var( --color-medium );
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.scrollZone#featureList .features_sort_option:hover {
+    background: var( --border-color );
+}
+
+.scrollZone#featureList .features_sort_option.active,
+.scrollZone#featureList .features_filter_option.active {
+    background: var( --border-color );
+}
+
+.scrollZone#featureList .features_filter_option {
+    border-radius: 0;
+    margin: 0;
+}
+
+.scrollZone#featureList .features_filter_option.active {
+    border-right: solid 1px white;
+}
+
+.scrollZone#featureList .features_filter_option:first-of-type {
+    border-top-left-radius: 10em;
+    border-bottom-left-radius: 10em;
+    padding-left: 1.25em;
+}
+
+.scrollZone#featureList .features_filter_option:last-of-type {
+    border-top-right-radius: 10em;
+    border-bottom-right-radius: 10em;
+    padding-right: 1.25em;
+    border-right-color: var( --border-color );
+}
+
+
+.scrollZone .feature {
+    position: relative;
+    width: calc(50% - 6em);
+    max-width: 600px;
+    margin: 2em 3em;
+    border: solid 1px var( --border-color );
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 12px 44px 0 rgba(176, 179, 188, 0.40);
+    overflow: hidden;
+}
+
+@media(max-width: 1400px) {
+    .scrollZone .feature {
+        margin: 2vw;
+        width: calc(50% - 4vw);
+    }
+}
+
+.scrollZone .feature-image {
+    position: relative;
+    background: var( --color-light );
+    padding-top: 50%;
+    overflow: hidden;
+}
+
+.scrollZone .feature-image img {
+    display: block;
+    position: absolute;
+    top: 0.25em;
+    left: 0.25em;
+    width: calc(100% - 0.5em);
+    height: calc(100% - 0.5em);
+    object-fit: contain;
+}
+
+.scrollZone .feature-info {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    padding: 18px 24px;
+}
+
+.scrollZone .feature-info-title,
+.scrollZone .feature-info-score,
+.scrollZone .feature-info-description {
+    margin: 0;
+}
+
+.scrollZone .feature-info-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var( --color-dark );
+}
+
+.scrollZone .feature-info-score {
+    margin-top: 0.125em;
+    margin-left: auto;
+    color: var( --color-mediumLight );
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.scrollZone .feature-info-description {
+    width: 100%;
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.357em;
+    color: var( --color-medium );
+}
+
+.scrollZone .feature-info-status {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var( --color-mediumLight );
+}
+
+.scrollZone .feature .hotspot {
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}

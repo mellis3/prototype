@@ -1,0 +1,25 @@
+{
+  "name": "expresstest",
+  "version": "1.0.0",
+  "description": "'test for using Express as a middletier'",
+  "main": "app.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "require-reload": "^0.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "nodemonConfig": {
+    "ignore": [
+      "public/*"
+    ],
+    "delay": 1000
+  }
+}
