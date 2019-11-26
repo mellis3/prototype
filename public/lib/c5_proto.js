@@ -594,7 +594,7 @@
         append a single hotspot to a node
     */
     this.hotspot = function( h, wrap, isGlobal = false, isNewHotspot = false ){
-        console.log( h );
+        //console.log( h );
 
         //if hotspot data isn't found for some reason then return an empty div
         //returning null currently breaks stuff
@@ -864,6 +864,10 @@
         if( typeof c.itemName !== 'undefined' ){
             result.setAttribute('data-itemName', c.itemName );
         }
+        if( typeof c.parent !== 'undefined' ){
+            result.setAttribute('data-node', c.parent );
+            result.setAttribute('data-itemName', c.name );
+        }
 
         //if nested inside a scrollZone
         if( typeof c.scrollZone !== 'undefined' ){
@@ -891,7 +895,7 @@
         //if in build mode
         //make comment draggable to update it's position
         if( showEditControls === true ){
-            _self.makeCommentDraggable( c, result );
+            _self.makeCommentDraggable( c, result, isNewComment );
         }
         
 
@@ -920,15 +924,18 @@
 
         //find the comment data
         let commentData = null;
+
+        //if new comment the data isn't yet saved into the JSON file.
         if( isNewComment === true ){
             console.log( 'new comment' );
 
             //base set of data
             commentData = {
+                id: commentNode.getAttribute( 'id' ),
                 type: _self.mode === 'build' ? 'logic' : 'comment',
                 x: commentNode.offsetLeft,
                 y: commentNode.offsetTop,
-                comment: 'enter your comment here',
+                comment: '',
                 user: _self.activeUser,
                 file: commentNode.getAttribute( 'data-file' ),
                 name: commentNode.getAttribute( 'data-node' )
@@ -946,7 +953,7 @@
             }
         }
         
-        //existing comment
+        //existing comment, get comment data from file
         else{
             let data = _self.dataPieces[ commentNode.getAttribute( 'data-file' ) ][ commentNode.getAttribute( 'data-node' )];
 
@@ -956,8 +963,6 @@
                     return i.name === item;
                 });
             }
-
-            console.log( data );
 
             commentData = _self.getComment( data, commentNode.getAttribute( 'id' ) );
         }
@@ -1068,13 +1073,18 @@
         }
         expandedComment.setAttribute('data-pos', position);
 
+        let commentContent = commentData.comment;
+        if( commentContent.length > 0 ){
+            commentData.comment.trim()
+        }
+
         //set the content of the modal
         expandedComment.innerHTML = `
             <div class='comment-content ${ showEditControls === true ? 'edit-mode' : '' }' style="width: ${ commentSize }px">
                 ${ showEditControls === true ? `
-                    <span class='comment-value' contenteditable='true'>${ commentData.comment.trim() }</span>
+                    <span class='comment-value' contenteditable='true' placeholder="enter your comment">${ commentContent }</span>
                 `: `
-                    <span class='comment-value'>${ commentData.comment.trim() }</span>
+                    <span class='comment-value'>${ commentContent }</span>
                 `}
                 <div class="user">${ user !== null ? user.first_name : 'N/A' }</div>
 
@@ -1125,7 +1135,27 @@
                 expandedComment.querySelector( '#updateComment' ).onclick = function(){
                     event.stopPropagation();
                     commentData.type = expandedComment.querySelector( '#comment-type' ).value;
-                    _self.newComment( commentData, expandedComment );
+
+                    _self.newComment( commentData, expandedComment, function( res, returnedData ){
+                        //add the comment to the data that currently exists on this page
+                        //on page refresh it will pull what's in the database, but we need that data to be available now also.
+                        let commentForm = _self.dataPieces[ returnedData.file ][ returnedData.name ];
+                        if( isOverlay !== null ){
+                            let item = returnedData.itemName;
+                            commentForm = commentForm.items.find( (i) => {
+                                return i.name === item;
+                            });
+                        }
+                        if( typeof commentData.scrollZone !== 'undefined' ){
+                            commentForm = commentForm.scrollZones.find( ( s ) => {
+                                return s.id === commentData.scrollZone;
+                            });
+                        }
+                        commentForm.comments.push( returnedData );
+
+                        //remove the new comment flag from this comment
+                        commentNode.setAttribute( 'data-new', false );
+                    } );
                 }
 
                 //new comment, not saved, just delete nodes
@@ -2925,7 +2955,7 @@
                     _self.toast( data.error, 'error' );
                 }else{
                     _self.toast( 'hotspot updated!', 'success' );
-                    if( typeof callback === 'funnction' ){
+                    if( typeof callback === 'function' ){
                         callback();
                     }
                 }
@@ -3138,7 +3168,7 @@
 
                     // minimum size
                     interact.modifiers.restrictSize({
-                        min: { width: 100, height: 50 }
+                        min: { width: 40, height: 40 }
                     })
                 ],
 
@@ -3198,7 +3228,7 @@
     /*
         Make this a draggable and resizeable hotspot
     */
-    this.makeCommentDraggable = function( c, node ){
+    this.makeCommentDraggable = function( c, node, isNewComment ){
         const commentDragState = node.getAttribute( 'data-draggable' );
         if( commentDragState === 'true' ){
             console.warn( 'comment is already draggable' );
@@ -3233,6 +3263,24 @@
                         c.y = Math.round( parseFloat( node.style.top ) );
 
                         //save the update
+                        //if new comment refetch the data because it likely won't match what was originally passed to this function
+                        if( isNewComment === true ){
+                            let commentForm = _self.dataPieces[ c.file ][ c.name ];
+                            if( c.file === 'overlay' ){
+                                let item = c.itemName;
+                                commentForm = commentForm.items.find( (i) => {
+                                    return i.name === item;
+                                });
+                            }
+                            if( typeof c.scrollZone !== 'undefined' ){
+                                commentForm = commentForm.scrollZones.find( ( s ) => {
+                                    return s.id === c.scrollZone;
+                                });
+                            }
+                            const commentData = _self.getComment( commentForm, c.id );
+                            c.type = commentData.type;
+                            c.comment = commentData.comment;
+                        }
                         _self.updateComment( c, null );
                     }
                 },
@@ -3258,11 +3306,11 @@
         Save a comment for the first time
         Called after adding a new annotation or comment and then pushing the "update" button
     */
-    this.newComment = function( commentData, commentNode ){
+    this.newComment = function( commentData, commentNode, callback ){
         event.stopPropagation();
         const currVal = commentNode.querySelector( '.comment-value' ).innerHTML;
 
-        console.log( commentData );
+        console.log( 'new comment:', commentData );
 
         if( typeof commentData.id === 'undefined' ){
             console.log( 'need to add ID' );
@@ -3280,6 +3328,9 @@
                     _self.toast( data.error, 'error' );
                 }else{
                     _self.toast( 'comment updated!', 'success' );
+                    if( typeof callback === 'function' ){
+                        callback( data, commentData );
+                    }
                 }
             }
         );
@@ -3292,7 +3343,7 @@
     */
     this.updateComment = function( commentData, commentNode ){
 
-        console.log( 'update comment:', commentData );
+        console.log( 'update existing comment:', commentData );
         
         //if dragging a comment the comment popup isn't visible so the commentNode param is null
         //if not null then get the latest values from the popup
@@ -3375,6 +3426,7 @@
 
         //create hotspot data
         let newComment = {
+            id: _self.createGuiID(),
             type: "logic",
             x: event.offsetX,
             y: event.offsetY,
@@ -3395,6 +3447,8 @@
         if( commentContext.scrollZone !== null ){
             newComment.scrollZone = commentContext.scrollZone;
         }
+
+        console.log( 'new comment data:', newComment );
 
         //render hotspot on screen
         commentContext.node.querySelector( '.comments' ).appendChild( _self.comment( newComment, commentContext.node, commentContext.data, true ) );
@@ -3419,6 +3473,7 @@
         
          //create hotspot data
          let newComment = {
+            id: _self.createGuiID(),
             type: "note",
             x: event.offsetX,
             y: event.offsetY,
@@ -3438,6 +3493,8 @@
         if( commentContext.scrollZone !== null ){
             newComment.scrollZone = commentContext.scrollZone;
         }
+
+        console.log( 'new comment data:', newComment );
 
         //render comment on screen
         commentContext.node.querySelector( '.comments' ).appendChild( _self.comment( newComment, commentContext.node, commentContext.data, true ) );

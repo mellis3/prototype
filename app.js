@@ -15,8 +15,10 @@ app.get('/', (req, res) => res.send('Hello World!'));
 function jsonReader( filePath, callback ){
     fs.readFile( filePath, (err, fileData) => {
         if( err ){
-            console.log( err );
-            updateLog( err, 'error' );
+            if( err.errno !== -2 ){
+                console.log( err );
+                updateLog( err, 'error' );
+            }
             return callback && callback( err );
         }
         try {
@@ -1175,9 +1177,6 @@ app.post(
                     }
                 }
 
-
-                
-
                 //update the hotspot data
                 hotspot.x = settings.x;
                 hotspot.y = settings.y;
@@ -1185,6 +1184,10 @@ app.post(
                 hotspot.h = settings.h;
                 hotspot.link = settings.link;
                 hotspot.type = settings.type;
+
+                if( typeof settings.state !== 'undefined' ){
+                    hotspot.state = settings.state;
+                }
 
                 //update the file with the new data
                 fs.writeFile( file, JSON.stringify( data ), err => {
@@ -1343,6 +1346,8 @@ app.post(
         const settings = req.body;
         const commentData = settings.data;
 
+        console.log( commentData );
+
         const file = `./public/data/${ commentData.file }.json`;
         let result = {};
         
@@ -1387,8 +1392,6 @@ app.post(
                     form.comments = [];
                     commentsBucket = form.comments;
                 }
-
-                console.log( commentsBucket );
 
                 //create the comment
                 let newC = {
@@ -1445,6 +1448,8 @@ app.post(
         const settings = req.body;
         const commentData = settings.data;
 
+        console.log( commentData );
+
         const file = `./public/data/${ commentData.file }.json`;
         let result = {};
         
@@ -1465,6 +1470,12 @@ app.post(
     
                 //find the form ( slide or scrollZone )
                 let form = data[ commentData.name ];
+                //check for some older data structure in some overlays
+                if( commentData.file === 'overlay' ){
+                    if( typeof form === 'undefined' ){
+                        form = data[ commentData.parent ];
+                    }
+                }
                 if( typeof form === 'undefined' ){
                     updateLog( `update comment ${ commentData.id }: could not find the form in the provided file`, 'error' );
                     result.status = 'error';
@@ -1474,7 +1485,13 @@ app.post(
                 }
                 if( commentData.file === 'overlay' ){
                     form = form.items.find( (i) => {
-                        return i.name === commentData.itemName;
+                        if( i.name === commentData.itemName ){
+                            return i;
+                        }
+                        //check for older data structure
+                        if( i.name === commentData.name ){
+                            return i;
+                        }
                     });
                 }
                 
@@ -1544,6 +1561,8 @@ app.post(
         const settings = req.body;
         const commentData = settings.data;
 
+        console.log( commentData );
+
         const file = `./public/data/${ commentData.file }.json`;
         let result = {};
         
@@ -1564,6 +1583,12 @@ app.post(
                 //find the form
                 //form will be either a slide or a scrollZone that is the direct parent of the comment
                 let form = data[ commentData.name ];
+                //check for some older data structure in some overlays
+                if( commentData.file === 'overlay' ){
+                    if( typeof form === 'undefined' ){
+                        form = data[ commentData.parent ];
+                    }
+                }
                 if( typeof form === 'undefined' ){
                     updateLog( `update comment ${ commentData.id }: could not find the form in the provided file`, 'error' );
                     result.status = 'error';
@@ -1571,9 +1596,17 @@ app.post(
                     res.send( result );
                     return;
                 }
+
+                //if this is an overlay, find the slide within the overlay
                 if( commentData.file === 'overlay' ){
                     form = form.items.find( (i) => {
-                        return i.name === commentData.itemName;
+                        if( i.name === commentData.itemName ){
+                            return i;
+                        }
+                        //check for older data structure
+                        if( i.name === commentData.name ){
+                            return i;
+                        }
                     });
                 }
                 
@@ -1582,6 +1615,8 @@ app.post(
                         return s.id === commentData.scrollZone;
                     });
                 }
+
+                console.log( form );
 
                 //find the comment
                 let comment = null;
