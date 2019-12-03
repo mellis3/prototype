@@ -5,11 +5,19 @@
         <title>Topic Prototype</title>
 
         <link rel="stylesheet" href="lib/c5_proto.css" />
+        <link href="https://cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet">
     </head>
     <body>
 
-        <div class="slidesAndCommentsWrap">
-            <div id="protoWrap" class="resize-container"></div>
+        <div class="slidesAndCommentsWrap hideComments">
+            <div id="protoWrap" class="resize-container">
+                <div class="item emptyState active">
+                    <img class="emptyState--image" src="/lib/img/searching.png">
+                    <p class="emptyState--header">Searching for your content</p>
+                    <p class="emptyState--message">This may take a moment.</p>
+                    <div class="metadata"></div>
+                </div>
+            </div>
             <div class="commentDrawer"></div>
         </div>
 
@@ -34,6 +42,8 @@
 
         <!-- libraries -->
         <script src="lib/interactjs.min.js"></script>
+        <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+        <!--<script src="lib/quill.min.js"></script>-->
         <script src="lib/c5_proto.js"></script>
 
     </body>

@@ -25,7 +25,8 @@
         issue: null,
         assessment: null,
         event: null,
-        overlay: null
+        overlay: null,
+        extra: null
     }
     _self.mainContext = 'protoWrap';
     _self.wrap = document.querySelector('#' + _self.mainContext);
@@ -237,6 +238,7 @@
         //sometimes we specify a node name that doesn't exist in the data
         if( typeof el === 'undefined' || el === null ){
             console.warn( 'node does not exist in data' );
+            _self.showEmptyState( wrap );
             return false;
         }
 
@@ -402,6 +404,24 @@
         }
 
     };
+
+    /*
+        When a slide cannot be found show an empty state screen
+    */
+    this.showEmptyState = function( wrap ){
+        console.log( wrap );
+        const node = document.createElement('div');
+        node.className = "item emptyState active";
+        node.innerHTML = `
+            <img class="emptyState--image" src="/lib/img/no-results.png" />
+            <p class="emptyState--header">Slide Not Found</p>
+            <p class="emptyState--message">This can happen for several reasons including an incorrect ID entered in the URL or a hotspot with an incorrect link.</p>
+            <a href="javascript:window.history.back()"><button class="button">Go Back</button></a>
+            <div class="metadata"></div>
+        `;
+        document.querySelector( '.slidesAndCommentsWrap' ).classList.add( 'hideComments' );
+        wrap.appendChild( node ) ;
+    }
 
     /*
         add overlay
@@ -860,6 +880,11 @@
         result.setAttribute('data-file', c.file );
         result.setAttribute('data-node', c.name );
 
+        //add flag for resolved
+        if( typeof c.resolved !== 'undefined' ){
+            result.setAttribute( 'data-resolved', c.resolved )
+        }
+        
         //if nested inside an overlay this is the slide within the overlay
         if( typeof c.itemName !== 'undefined' ){
             result.setAttribute('data-itemName', c.itemName );
@@ -1004,7 +1029,7 @@
                 <option value="notification" ${ commentData.type === 'notification' ? 'selected' : null }>Notification</option>
                 <option value="comment" ${ commentData.type === 'comment' ? 'selected' : null }>Note</option>
                 <option value="question" ${ commentData.type === 'question' ? 'selected' : null }>Question</option>
-            `
+            `;
         }
         else if( commentData.user === _self.activeUser ){
             showEditControls = true;
@@ -1031,11 +1056,18 @@
                 `
             }
         }
+        let resolve = `
+            <div class="resolve">
+                <input type="checkbox" id="resolveComment" data-resolved='${ typeof commentData.resolved !== 'undefined' ? commentData.resolved : 'false' }' ${ commentData.resolved === true ? 'class="checked"' : ''}>
+                <label>${ commentData.resolved === true ? 'Marked Completed' : 'Mark as Completed'}</label>
+            </div>
+        `
 
         let user = null;
         if( typeof commentData.user !== 'undefined' ){
             user = _self.findUser( commentData.user );
         }
+
 
 
 
@@ -1082,7 +1114,7 @@
         expandedComment.innerHTML = `
             <div class='comment-content ${ showEditControls === true ? 'edit-mode' : '' }' style="width: ${ commentSize }px">
                 ${ showEditControls === true ? `
-                    <span class='comment-value' contenteditable='true' placeholder="enter your comment">${ commentContent }</span>
+                    <span class='comment-value' contenteditable='true'><!--${ commentContent }--></span>
                 `: `
                     <span class='comment-value'>${ commentContent }</span>
                 `}
@@ -1097,6 +1129,7 @@
                             </select>
                         </div>
                     </div>
+                    ${ isNewComment !== true ? resolve : `` }
                     <div class="actions">
                         ${ typeof commentData.updatedOn !== 'undefined' ? `
                             <span class="timestamp">${ _self.humanDate( commentData.updatedOn, true ) }</span>
@@ -1120,10 +1153,13 @@
                         >${ isNewComment === true ? 'Save New Comment' : 'Update' }</button>
                     </div>
                 `: `
+                    ${ isNewComment !== true ? resolve : `` }
+                    <span class="timestamp">
                     ${ typeof commentData.updatedOn !== 'undefined' ? `
-                        <span class="timestamp">${ _self.humanDate( commentData.updatedOn, true ) }</span>
-                    `: ''
+                        ${ _self.humanDate( commentData.updatedOn, true ) }
+                    `: 'Not sure when this comment was made...'
                     }
+                    </span>
                 `}
             </div>
         `;
@@ -1134,7 +1170,6 @@
             if( isNewComment === true ){
                 expandedComment.querySelector( '#updateComment' ).onclick = function(){
                     event.stopPropagation();
-                    commentData.type = expandedComment.querySelector( '#comment-type' ).value;
 
                     _self.newComment( commentData, expandedComment, function( res, returnedData ){
                         //add the comment to the data that currently exists on this page
@@ -1192,6 +1227,30 @@
             }
         }
 
+
+        //for non-new comments only
+        //whether in edit or not edit mode
+        if( isNewComment === false ){
+            expandedComment.querySelector( '#resolveComment' ).onclick = function(){
+                event.stopPropagation();
+                let resolve = expandedComment.querySelector( '#resolveComment' );
+                if( resolve.getAttribute( 'data-resolved' ) === 'true' ){
+                    commentData.resolved = false;
+                }else{
+                    commentData.resolved = true;
+                }
+                _self.updateComment(
+                    commentData,
+                    expandedComment,
+                    ( data ) => {
+                        expandedComment.remove();
+                        commentNode.setAttribute( 'data-resolved', commentData.resolved );
+                    },
+                    true
+                );
+            }
+        }
+
         //prevent click bubbling up
         expandedComment.onclick = function(){
             event.stopPropagation();
@@ -1203,6 +1262,7 @@
 
         //if build mode
         if( _self.mode === 'build' ){
+           
 
             //focus the input field
             expandedComment.querySelector( '.comment-value' ).focus();
@@ -1212,6 +1272,53 @@
                 e.stopPropagation();
             }
         }
+
+        let quillOptions = {
+            modules: {
+              toolbar: [
+                ['bold', 'italic', 'underline'],
+                ['link'],
+                ['clean']
+              ]
+            },
+            placeholder: 'Write a comment',
+            theme: 'bubble'
+        };
+        if( showEditControls === false ){
+            quillOptions.readOnly = true;
+        }
+
+        //this.quill.formatText(range, 'bold', true);
+
+        //setup the Quill Editor
+        _self.commentEditor = new Quill(
+            `.comment.expanded .comment-value`,
+            quillOptions
+        );
+
+        //with the Quill editor we'll have plain text string and formatted text objects to use
+        //older comments will just be plain strings
+        if( typeof commentData.quill !== 'undefined' ){
+            _self.commentEditor.setContents( commentData.quill );
+        }else{
+            _self.commentEditor.setText( commentContent );
+        }
+
+        //use the selection change event within the Quill Editor to do stuff
+        _self.commentEditor.on('selection-change', range => {
+            // if range is null then the quill instance has lost focus or is completely gone - this happens when a comment closes
+            if( range !== null ){
+                //if range length is 0 then nothing is selected, see if we can hide the tooltip
+                if( range.length === 0 ){
+                    document.querySelector( '.ql-tooltip' ).classList.add( 'hide' );
+                }else{
+                    document.querySelector( '.ql-tooltip' ).classList.remove( 'hide' );
+                }
+            }
+        });
+
+        _self.commentEditor.on('bold', function(){ console.log( 'bold' ); });
+
     }
     
 
@@ -1261,8 +1368,12 @@
             _self.commentDrawer.appendChild( commentNode );
 
             commentNode.onclick = function(){
-                console.log( 'open comment' );
-                _self.wrap.querySelector( `.item.active .comment[id='${ c.id }']` ).click();
+                console.log( 'open comment', c.id );
+                const commentBubble = _self.wrap.querySelector( `.item.active .comment[id='${ c.id }']` );
+                console.log( commentBubble );
+                if( commentBubble !== null ){
+                    commentBubble.click();
+                }
             }
         }
     }
@@ -1956,7 +2067,7 @@
     /*
         Create a modal
     */
-    this.modal = function( title, content, position = null ){
+    this.modal = function( title, content, position = null, id = null ){
         const node = document.createElement('div');
         node.className = `modal`;
         node.innerHTML = `
@@ -1972,6 +2083,10 @@
                 </div>
             </div>
         `;
+
+        if( id !== null ){
+            node.setAttribute( 'id', id );
+        }
 
         if( title !== null ){
             node.querySelector( '.closeX' ).onclick = closeModal;
@@ -3308,8 +3423,6 @@
     */
     this.newComment = function( commentData, commentNode, callback ){
         event.stopPropagation();
-        const currVal = commentNode.querySelector( '.comment-value' ).innerHTML;
-
         console.log( 'new comment:', commentData );
 
         if( typeof commentData.id === 'undefined' ){
@@ -3317,7 +3430,13 @@
             commentData.id = _self.createGuiID();
         }
 
-        commentData.comment = currVal.trim();
+        //get the latest value of the comment
+        commentData.quill = _self.commentEditor.getContents();
+        commentData.comment = _self.commentEditor.getText();
+
+        //get the latest value of the type dropdown
+        commentData.type = commentNode.querySelector( '#comment-type' ).value;
+
         _self.post(
             'add/comment',
             { 
@@ -3341,16 +3460,18 @@
         Update a comment
         Called by pushing the "update" button anytime except in the case above.
     */
-    this.updateComment = function( commentData, commentNode ){
+    this.updateComment = function( commentData, commentNode, callback, resolveOnly = false ){
 
         console.log( 'update existing comment:', commentData );
         
         //if dragging a comment the comment popup isn't visible so the commentNode param is null
         //if not null then get the latest values from the popup
-        if( commentNode !== null ){
+        if( commentNode !== null && resolveOnly !== true ){
 
             //get the latest value of the comment
-            commentData.comment = commentNode.querySelector( '.comment-value' ).innerHTML;
+            //commentData.comment = commentNode.querySelector( '.comment-value' ).innerHTML;
+            commentData.quill = _self.commentEditor.getContents();
+            commentData.comment = _self.commentEditor.getText();
 
              //get the latest value of the type dropdown
             commentData.type = commentNode.querySelector( '#comment-type' ).value;
@@ -3358,8 +3479,9 @@
 
 
         //get the current user making the update
-        commentData.user = _self.activeUser;
-
+        if( resolveOnly !== true ){
+            commentData.user = _self.activeUser;
+        }
 
         //hit the API
         _self.post(
@@ -3372,6 +3494,9 @@
                     _self.toast( data.error, 'error' );
                 }else{
                     _self.toast( 'comment updated!', 'success' );
+                    if( typeof callback === 'function' ){
+                        callback( data );
+                    }
                 }
             }
         );
@@ -3823,16 +3948,65 @@
 
     /*
         Create a human readable date from a JS date object
+        Uses the Time Ago function to put the date in a human readable format
     */
     this.humanDate = function( date, includeTime = false ){
         let d = new Date( date );
-        result = null;
-        if( includeTime === true ){
-            result = `${ d.toDateString() } ${ d.toLocaleTimeString() }`;
-        }else{
-            result = d.toDateString();
-        }
-        return result;
+        return _self.timeAgo( `${ d.toDateString() } ${ d.toLocaleTimeString() }` );
+    }
+    this.timeAgo = function( time ){
+
+        var templates = {
+            prefix: "",
+            suffix: " ago",
+            seconds: "less than a minute",
+            minute: "about a minute",
+            minutes: "%d minutes",
+            hour: "about an hour",
+            hours: "about %d hours",
+            day: "a day",
+            days: "%d days",
+            month: "about a month",
+            months: "%d months",
+            year: "about a year",
+            years: "%d years"
+        };
+        var template = function(t, n) {
+            return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));
+        };
+   
+        if( !time ){
+            return;
+        } 
+        time = time.replace(/\.\d+/, ""); // remove milliseconds
+        time = time.replace(/-/, "/").replace(/-/, "/");
+        time = time.replace(/T/, " ").replace(/Z/, " UTC");
+        time = time.replace(/([\+\-]\d\d)\:?(\d\d)/, " $1$2"); // -04:00 -> -0400
+        time = new Date(time * 1000 || time);
+
+        var now = new Date();
+        var seconds = ( ( now.getTime() - time ) * .001 ) >> 0;
+        var minutes = seconds / 60;
+        var hours = minutes / 60;
+        var days = hours / 24;
+        var years = days / 365;
+
+        return templates.prefix + (
+            seconds < 45 && template('seconds', seconds) ||
+            seconds < 90 && template('minute', 1) ||
+            minutes < 45 && template('minutes', minutes) ||
+            minutes < 90 && template('hour', 1) ||
+            hours < 24 && template('hours', hours) ||
+            hours < 42 && template('day', 1) ||
+            days < 30 && template('days', days) ||
+            days < 45 && template('month', 1) ||
+            days < 365 && template('months', days / 30) ||
+            years < 1.5 && template('year', 1) ||
+            template('years', years)
+            ) + templates.suffix;
+        
+       
+        
     }
 
     /*
@@ -3988,6 +4162,7 @@
         }
     }
 
+
     /*
        Click anywhere to do stuff
     */
@@ -4033,6 +4208,12 @@
         for( let m of openModals ){
             m.remove();
         }
+
+        //close any open quill editors
+        if( typeof _self.commentEditor !== 'undefined' ){
+            _self.commentEditor.blur();
+        }
+        
     }
 
     /*

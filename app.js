@@ -1412,6 +1412,10 @@ app.post(
                     newC.itemName = commentData.itemName;
                 }
 
+                if( typeof commentData.quill !== 'undefined' ){
+                    newC.quill = commentData.quill;
+                }
+
 
                 commentsBucket.push( newC );
 
@@ -1527,6 +1531,14 @@ app.post(
                 comment.type = commentData.type;
                 comment.user = commentData.user;
                 comment.updatedOn = new Date();
+
+                if( typeof commentData.quill !== 'undefined' ){
+                    comment.quill = commentData.quill;
+                }
+
+                if( typeof commentData.resolved !== 'undefined' ){
+                    comment.resolved = commentData.resolved;
+                }
 
                 //console.log( 'new value of comment:', comment );
 

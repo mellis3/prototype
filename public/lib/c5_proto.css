@@ -170,6 +170,34 @@ body.addingHotspot::after{
     opacity: 1;
 }
 
+/* empty state */
+.emptyState{
+    min-height: 100%;
+    padding: 1em;
+    text-align: center;
+    background: white;
+    border-radius: 1em;
+}
+    .emptyState--image{
+        display: inline-block;
+        max-height: calc(100vh - 18em);
+    }
+    .emptyState--header{
+        font-size: 1.25em;
+        font-weight: bold;
+        color: var( --color-mediumDark );
+    }
+    .emptyState--message{
+        max-width: 560px;
+        margin: 0 auto;
+        font-size: 1em;
+        color: var( --color-medium );
+    }
+    .emptyState .button{
+        margin-top: 1em;
+    }
+
+
 .image {
     display: block;
     max-width: 1400px;
@@ -419,12 +447,13 @@ body.addingHotspot::after{
 
 .comment {
     position: absolute;
-    cursor: pointer;
     width: 20px;
     height: 20px;
     z-index: 5000;
 }
-
+.comment:not( .expanded ){
+    cursor: pointer;
+}
 .comment:not( .expanded )::before {
     content: '';
     position: absolute;
@@ -457,6 +486,17 @@ body.addingHotspot::after{
     transform: scale(1.25);
 }
 
+.comment:not( .expanded )[ data-resolved='true' ]::after{
+    content: '';
+    transform: rotate(128deg) translate( 10%, -93% );
+    height: calc( 100% - 15px);
+    width: calc( 100% - 10px );
+    background: none;
+    border-radius: 0;
+    border-top: solid 2px white;
+    border-right: solid 2px white;
+}
+
 .comment-settings {
     margin: 1em -10px;
 }
@@ -478,19 +518,43 @@ body.addingHotspot::after{
     /* Internet Explorer/Edge */
     user-select: none;
     /* Chrome */
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
     .comment-content .comment-value{
         font-size: 1.2em;
         line-height: 1.5em;
     }
+        .comment-content .comment-value a{
+            text-decoration: underline;
+            color: var( --color-status-blue );
+        }
+        .comment-value .ql-editor{
+            padding: 0;
+        }
     .comment-value[contenteditable='true'] {
         margin: -10px -10px 10px -10px;
     }
+    .comment-value .ql-editor{
+        overflow: visible;
+    }
+
+    .comment-content .resolve{
+        display: flex;
+        align-items: center;
+    }
+        .comment-content .resolve label{
+            margin-top: 0.25em;
+        }
+        .comment-content .resolve[data-resolved='true']{
+
+        }
+
 
     .comment-content .actions {
         margin: 2em -2em -2em;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
     }
 
     /* not in edit mode */
@@ -504,6 +568,10 @@ body.addingHotspot::after{
             position: absolute;
             bottom: 1.4em;
             left: 2em;
+        }
+        .comment-content:not( .edit-mode ) .resolve{
+            margin-left: -0.5em;
+            margin-top: 1em;
         }
         
 
@@ -520,6 +588,9 @@ body.addingHotspot::after{
         border: solid 1px var( --border-color );
         border-radius: 5px;
         font-weight: 500;
+    }
+    .comment-content.edit-mode .resolve{
+        margin-left: -1.25em;
     }
 
 /*
@@ -593,6 +664,14 @@ body.addingHotspot::after{
     color: rgba(154, 69, 24, 1);
 }
 */
+
+.ql-tooltip{
+    z-index: 10000;
+}
+    .ql-tooltip.hide{
+       opacity: 0;
+       pointer-events: none;
+    }
 
 .scrollZone {
     position: absolute;
@@ -1179,12 +1258,104 @@ label + input, label + select {
     margin-top: 2px;
 }
 
-input{
+input, .readOnlyInput{
     font-size: 1em;
     padding: 1em 1.25em;
     border: solid 1px var( --border-color );
     border-radius: 5px;
 }
+    input + input{
+        margin-top: 0.5em;
+    }
+input[type='checkbox']{
+    display: block;
+    position: relative;
+    font-size: 1.5em;
+    width: 1em;
+    padding: 0;
+    height: 1em;
+    border-radius: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+    input[type='checkbox']::before{
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: calc( 100% - 6px );
+        height: calc( 100% - 6px );
+        transform: scale( 0 );
+        background: var( --color-light );
+        border-radius: 4px;
+        transition: transform 0.3s, background 0.3s;
+    }
+    input[type='checkbox']:hover::before{
+        transform: scale( 1 );
+    }
+    input[type='checkbox'].checked{
+        background: var( --color-status-blue );
+    }
+    input[type='checkbox'].checked::before{
+        transform: rotate(128deg) translate( 2%, 6% ) scale( 0.9 );
+        height: calc( 100% - 10px);
+        border-radius: 0;
+        background: none;
+        border-top: solid 2px white;
+        border-right: solid 2px white;
+    }
+
+
+.readOnlyInput{
+    margin: 0;
+}
+    .readOnlyInput + .readOnlyInput{
+        margin-top: 0.5em;
+    }
+
+/* text editing options */
+.textEditOptions{
+    display: flex;
+    align-items: center;
+    margin: -0.5em;
+}
+    .textEditOption{
+        position: relative;
+        min-width: 44px;
+        height: 44px;
+        text-align: center;
+        z-index: 1;
+    }
+    .textEditOption::before{
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: calc( 100% - 0.4em );
+        height: calc( 100% - 0.4em );
+        background: transparent;
+        border-radius: 0.5em;
+        transform: translate( -50%, -50% ) scale( 0.8 );
+        transition: transform 0.3s, background 0.3s;
+        z-index: -1;
+    }
+    .textEditOption span{
+        font-size: 0;
+    }
+
+    .textEditOption:hover::before {
+        transform: translate( -50%, -50% ) scale( 1 );
+        background: var( --color-light );
+    }
+    
+    .textEditOption.active::before{
+        transform: translate( -50%, -50% ) scale( 1 );
+        background: var( --color-light );
+    }
+        .textEditOption.active svg {
+            fill: var( --color-status-blue );
+        }
 
 :focus {
     outline: none;
