@@ -114,7 +114,7 @@ body.addingHotspot::after{
 .slidesAndCommentsWrap.hideComments .commentDrawer {
     display: none;
 }
-    .slidesAndCommentsWrap.hideComments .metadata .meta-comments {
+    /*.slidesAndCommentsWrap.hideComments .metadata .meta-comments {
         color: inherit;
         background: var( --color-dark );
     }
@@ -124,7 +124,7 @@ body.addingHotspot::after{
     .slidesAndCommentsWrap.hideComments .metadata .meta-comments .count {
         background: var( --color-medium );
         color: var( --color-darker );
-    }
+    }*/
 
 
 #protoWrap {
@@ -245,16 +245,10 @@ body.addingHotspot::after{
 }
 
 .metadata .meta-comments {
-    order: 3;
     display: block;
     position: relative;
-    margin-left: auto;
+    margin-left: 10px;
     margin-right: 10px;
-    padding: 0.5em 1em;
-    border-radius: 1em;
-    background: var( --color-light );
-    color: var( --color-status-blue );
-    cursor: pointer;
 }
     .metadata .meta-comments::before{
         content: '';
@@ -268,11 +262,13 @@ body.addingHotspot::after{
         z-index: -1;
     }
 
-.metadata .meta-comments .count {
-    margin-right: 0.25em;
-    background: var( --color-status-blue );
-    color: var( --color-light );
-}
+    .slidesAndCommentsWrap.hideComments .meta-comments::before{
+        display: none;
+    }
+    .slidesAndCommentsWrap:not( .hideComments ) .meta-comments{
+        background: var( --color-light );
+    }
+
 
 .metadata .timestamp{
     color: inherit;
@@ -337,27 +333,28 @@ body.addingHotspot::after{
     .modal .statusOptions .modal-input:hover{
         background: var( --color-extraLight );
     }
-    .modal .statusOptions .modal-input::before{
+    .modal .statusOptions .modal-input::before, .modal .info .status::before{
         content: '';
+        display: block;
         position: relative;
         margin-right: 1em;
         width: 10px;
         height: 10px;
         border-radius: 50%;
     }
-    .modal .statusOptions #approved::before{
+    .modal .statusOptions #approved::before, .modal .info #approved::before{
         background-color: var( --color-status-green );
     }
     
-    .modal .statusOptions #inProgress::before{
+    .modal .statusOptions #inProgress::before, .modal .info #inProgress::before{
         background-color: var( --color-status-blue );
     }
     
-    .modal .statusOptions #conceptual::before{
+    .modal .statusOptions #conceptual::before, .modal .info #conceptual::before{
         background-color: var( --color-status-yellow );
     }
     
-    .modal .statusOptions #onHold::before{
+    .modal .statusOptions #onHold::before, .modal .info #onHold::before{
         background-color: var( --color-status-red );
     }
     
@@ -418,31 +415,37 @@ body.addingHotspot::after{
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.commentDrawer .comment:not( .expanded )::before {
-    top: 50%;
-    left: 0;
-    width: 26px;
-    height: 26px;
-    transform: translate(-50%, -50%);
-}
+    .commentDrawer .comment:not( .expanded )::before {
+        top: 50%;
+        left: 0;
+        width: 26px;
+        height: 26px;
+        transform: translate(-50%, -50%);
+    }
 
-.commentDrawer .comment:not( .expanded )::after {
-    content: attr(data-commentnum);
-    top: 50%;
-    left: 0;
-    width: 20px;
-    height: 20px;
-    transform: translate(-50%, -50%);
-}
+    .commentDrawer .comment:not( .expanded )::after {
+        content: attr(data-commentnum);
+        top: 50%;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        transform: translate(-50%, -50%);
+    }
 
-.commentDrawer .comment:not( .expanded ):hover {
-    transform: scale(1.025);
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
-}
+    .commentDrawer .comment:not( .expanded ):hover {
+        transform: scale(1.025);
+        box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    }
 
-.commentDrawer .comment:not( .expanded ):hover::before {
-    transform: translate(-50%, -50%) scale(1.25);
-}
+    .commentDrawer .comment:not( .expanded ):hover::before {
+        transform: translate(-50%, -50%) scale(1.25);
+    }
+
+    .commentDrawer .comment .ql-container{
+        font-size: inherit;
+        line-height: inherit;
+        color: inherit;
+    }
 
 
 .comment {
@@ -1074,6 +1077,7 @@ body.addingHotspot::after{
     flex-direction: column;
     flex-grow: 1;
     padding: 1em;
+    overflow: scroll;
 }
 
 .modal .actions {
@@ -1127,6 +1131,26 @@ body.addingHotspot::after{
 }
 .toast[data-state='error'] .icon{
     fill: var( --color-status-red );
+}
+
+/* info modal */
+.modal .info{
+    padding: 0 0.5em 1em 0.5em;
+}
+    .modal .info .comment{
+        display: inline-block;
+        position: relative;
+        min-width: 20px;
+        margin-right: 1em;
+    }
+
+
+
+.flex{
+    display: flex;
+}
+.flex--vertical-center{
+    align-items: center;
 }
 
 .timestamp{
@@ -1198,6 +1222,22 @@ body.addingHotspot::after{
     color: var( --color-status-red );
 }
 
+.button--rounded{
+    padding: 0.5em 1em;
+    border-radius: 1em;
+    background: var( --color-dark );
+    border: 0;
+    font-size: 11px;
+    line-height: 1.6em; /* this is needed so if the Count symbol is added inside the button then all buttons remain the same height */
+    color: var( --color-medium );
+    cursor: pointer;
+}
+    .button--rounded .count{
+        margin-right: 0.25em;
+        background: var( --color-status-blue );
+        color: var( --color-light );
+    }
+
 .user{
     display: inline-block;
     position: absolute;
@@ -1230,6 +1270,32 @@ body.addingHotspot::after{
     top: 21px;
     right: 6px;
 }
+
+.headerText, .bodyText{
+    margin: 0;
+    line-height: 1.5em;
+}
+.headerText{
+    font-size: 14px;
+    font-weight: 600;
+    color: var( --color-mediumDark );
+}
+.bodyText{
+    font-size: 12px;
+    color: var( --color-medium );
+}
+    .bodyText.bold{
+        font-weight: 600;
+    }
+    .headerText + .bodyText{
+        margin-top: 0.5em;
+    }
+    .bodyText + .bodyText{
+        margin-top: 0.5em;
+    }
+    .bodyText + .headerText{
+        margin-top: 2em;
+    }
 
 .helpText{
     font-size: 11px;
@@ -1313,49 +1379,6 @@ input[type='checkbox']{
     .readOnlyInput + .readOnlyInput{
         margin-top: 0.5em;
     }
-
-/* text editing options */
-.textEditOptions{
-    display: flex;
-    align-items: center;
-    margin: -0.5em;
-}
-    .textEditOption{
-        position: relative;
-        min-width: 44px;
-        height: 44px;
-        text-align: center;
-        z-index: 1;
-    }
-    .textEditOption::before{
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: calc( 100% - 0.4em );
-        height: calc( 100% - 0.4em );
-        background: transparent;
-        border-radius: 0.5em;
-        transform: translate( -50%, -50% ) scale( 0.8 );
-        transition: transform 0.3s, background 0.3s;
-        z-index: -1;
-    }
-    .textEditOption span{
-        font-size: 0;
-    }
-
-    .textEditOption:hover::before {
-        transform: translate( -50%, -50% ) scale( 1 );
-        background: var( --color-light );
-    }
-    
-    .textEditOption.active::before{
-        transform: translate( -50%, -50% ) scale( 1 );
-        background: var( --color-light );
-    }
-        .textEditOption.active svg {
-            fill: var( --color-status-blue );
-        }
 
 :focus {
     outline: none;

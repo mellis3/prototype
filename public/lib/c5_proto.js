@@ -17,7 +17,10 @@
 (function () {
 
     const _self = this;
-    //_self.data = data;
+
+    /************************** Settings / Variables **************************/
+
+    //a place to store the various json data files that will be loaded
     _self.dataPieces = {
         //users: null,
         global: null,
@@ -28,40 +31,51 @@
         overlay: null,
         extra: null
     }
+
+    //various DOM Nodes or names of nodes to use for appending content
     _self.mainContext = 'protoWrap';
     _self.wrap = document.querySelector('#' + _self.mainContext);
     _self.commentDrawer = document.querySelector('.commentDrawer');
+    _self.modeControls = document.querySelector( '.modeControls ');
 
-    //used for draw mode
-    _self.drawMode = false;
-    _self.clickCount = 1;
-    _self.drawResult = {
-            x: 0,
-            y: 0,
-            w: 0,
-            h: 0
-        },
-    
+    //which mode the prototype is in
+    //view = limited functionality, can browse and navigate, can read comments and post questions
+    //build = manage hotspots, modify any comment, add annotations, etc
     _self.mode = 'view';
+
+    //flag to be used when adding something
+    //needed because when true if user clicks anywhere on the screen we'll know what to do with the click.
     _self.addingAnnotation = false;
     _self.addingComment = false;
     _self.addingHotspot = false;
-    _self.modeControls = document.querySelector( '.modeControls ');
+
+    //TO-DO add in a control to show/hide layers, such as comments
     _self.layers = [
         'comments',
         'annotations'
     ];
 
-    _self.hotspots = [];
-
     //store the active user
     _self.activeUser = null;
     _self.activeUserAuth = false;
+
+
+
+
+
+
+    /************************** Functions **************************/
+
 
     /*
         read and write history to be able to create deep links
     */
     this.navigation = {
+
+        /*
+            Read the URL params
+            If ID and Context params exist then go to the corresponding slide
+        */
         read: function () {
             const params = new URLSearchParams(window.location.search);
 
@@ -72,8 +86,13 @@
                 });
             }
         },
+
+        /*
+            Write to the browser history
+            Also updates the URL as navigation occurs within the app
+        */
         write: function (item, context) {
-            console.log('write history', item, context);
+            //console.log('write history', item, context);
             history.pushState({
                     id: item,
                     context: context
@@ -82,7 +101,14 @@
                 `?id=${ item }&context=${ context }` //new URL
             );
         },
-        goTo: function (item) {
+
+        /*
+            Go to a specific screen
+            Triggered by:
+                1. browser back / forward buttons
+                2. typing in a side ID and context in the URL - from the navigation.read function
+        */
+        goTo: function( item ){
             if (item !== null) {
 
                 //if context is main context then close any open overlays
@@ -108,19 +134,33 @@
                         overlay.classList.add('active');
                     }
                 }
+
+                //go to the item
                 _self.changeItem( item.id, item.context, true);
             } else {
-                console.log("no where to go to")
+                console.warn("no where to go to")
             }
         },
+
+        /*
+            Go back to the previous item stored in the browser history
+            Triggered by:
+                1. a hotspot using the "back" function
+        */
         goBack: function () {
             window.history.back();
         }
     }
 
 
+
+
     /*
         Find item in data
+        Called by:
+            1. navigation.goTo()
+            2. changeItem()
+            3. findSlide()
     */
     this.find = function( id, context ){
 
@@ -128,26 +168,25 @@
 
         let result = null;
 
-        //if context is an overlay find it and then set it's items as dataBucket
-        //we only want to look within the overlay context for the next item
-        if (context !== _self.mainContext) {
+        //if context is not the main context then we're looking for data within an overlay
+        if( context !== _self.mainContext ){
 
-            //find specific item request from the dataBucket
+            //only look within the overlay file
             const overlay = _self.dataPieces.overlay[ context ];
             if( typeof overlay === 'undefined' ){
                 console.warn( 'could not find overlay data for id:', id );
                 return false;
             }
 
+            //find overlay by name using the provided ID
             result = overlay.items.find( ( o ) => {
                 return o.name === id;
             });
             
         }
 
-        //if dataBucket is the main set of data then we'll need to look within each object.
+        //if context is the main context then look for the slide in all the possible data files as defined in the settings section above
         else{
-            //find specific item request from the dataBucket
             for( let el in _self.dataPieces ){
                 if( typeof _self.dataPieces[ el ][ id ] !== 'undefined' ){
                     result = _self.dataPieces[ el ][ id ];
@@ -155,9 +194,9 @@
             }
         }
 
-        
         return result;
     }
+
 
 
     /*
@@ -274,12 +313,13 @@
             <div class="comments"></div>
             <div class="metadata">
                 <span class='lastUpdated timestamp'>Last Updated: <span id='lastMod'></span></span>
+                <span class='status' data-status='${ status }'><span>Status:</span> <span class="status-indicator">${ status }</span></span>
+                <button id="allCommentsByModule" class="button button--rounded">All <span style="text-transform: capitalize;">${ el.file }</span> Comments</button>
                 ${ commentOnNode !== null ?
-                    `<span class='meta-comments'><span class='count'>${ commentCount }</span> Comments on this page</span>`
+                    `<span class='meta-comments button button--rounded'><span class='count'>${ commentCount }</span> Comments on this page</span>`
                     :
                     ''
                 }
-                <span class='status' data-status='${ status }'><span>Status:</span> <span class="status-indicator">${ status }</span></span>
             </div>
         `;
 
@@ -401,6 +441,11 @@
             }else{
                 _self.modeControls.querySelector( '#addToDrawer' ).classList.remove( 'active' );
             }
+        }
+
+        node.querySelector( '#allCommentsByModule' ).onclick = function(){
+            console.log( 'load all comments from a file' );
+            _self.getCommentsByModule( 'issue' );
         }
 
     };
@@ -1014,7 +1059,7 @@
 
 
         //show the comment detail modal
-        console.log('show the comment', isNewComment);
+        console.log('show the comment', '- is new comment:', isNewComment);
 
 
         //flags for which controls to show (update, delete etc)
@@ -1256,7 +1301,6 @@
             event.stopPropagation();
         }
 
-
         _self.wrap.appendChild( expandedComment );
 
 
@@ -1362,15 +1406,35 @@
             commentNode.setAttribute( 'data-type', c.type );
             commentNode.setAttribute( 'data-commentNum', iteration );
             iteration++;
-            commentNode.innerHTML = `
-                ${ c.comment }
-            `;
+
+            //if this comment is using quill then display the formatted data
+            if( typeof c.quill !== 'undefined' ){
+                commentContents = c.quill;
+                
+                commentNode.innerHTML = `<div class='comment-value'></div>`;
+
+                const commentQuill = new Quill(
+                    commentNode.querySelector( '.comment-value' ),
+                    {
+                        modules: {},
+                        placeholder: 'Write a comment',
+                        theme: 'bubble',
+                        readOnly: true
+                    }
+                );
+                commentQuill.setContents( c.quill );
+            }
+            
+            //if its an old comment then just display the plain text
+            else{
+                commentNode.innerHTML = c.comment;
+            }
+
             _self.commentDrawer.appendChild( commentNode );
 
-            commentNode.onclick = function(){
-                console.log( 'open comment', c.id );
+            commentNode.onclick = function( e ){
+                e.stopPropagation();
                 const commentBubble = _self.wrap.querySelector( `.item.active .comment[id='${ c.id }']` );
-                console.log( commentBubble );
                 if( commentBubble !== null ){
                     commentBubble.click();
                 }
@@ -1969,100 +2033,6 @@
 
 
 
-    /*
-        Helper to get coordinates
-        User clicks 2 points to create rectangle
-        return: {
-            x,
-            y,
-            w,
-            h
-        }
-    */
-    /*this.enableDrawMode = function () {
-        console.log('draw mode enabled');
-        _self.drawMode = true;
-
-        const clickAreas = _self.wrap.querySelectorAll('.item');
-        for (let c of clickAreas) {
-            c.addEventListener("click", _self.clickPos, false);
-        }
-
-        //disable any hotspots that exist
-        const hotspots = _self.wrap.querySelectorAll('.hotspot');
-        for (let h of hotspots) {
-            h.style.pointerEvents = 'none';
-        }
-
-    };
-    this.disableDrawMode = function () {
-        console.log('draw mode disabled');
-        _self.drawMode = false;
-
-        //remove click listeners
-        const clickAreas = _self.wrap.querySelectorAll('.item');
-        for (let c of clickAreas) {
-            c.removeEventListener("click", _self.clickPos, false);
-        }
-
-        //re-enable any hotspots that exist
-        const hotspots = _self.wrap.querySelectorAll('.hotspot');
-        for (let h of hotspots) {
-            h.style.pointerEvents = 'auto';
-        }
-    }
-    */
-
-    /*
-    this.clickPos = function (e) {
-        //get object's exact position
-        function getPosition(el) {
-            var xPos = 0;
-            var yPos = 0;
-
-            while (el) {
-                if (el.tagName == "BODY") {
-                    // deal with browser quirks with body/window/document and page scroll
-                    var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
-                    var yScroll = el.scrollTop || document.documentElement.scrollTop;
-
-                    xPos += (el.offsetLeft - xScroll + el.clientLeft);
-                    yPos += (el.offsetTop - yScroll + el.clientTop);
-                } else {
-                    // for all other non-BODY elements
-                    xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-                    yPos += (el.offsetTop - el.scrollTop + el.clientTop);
-                }
-
-                el = el.offsetParent;
-            }
-            return {
-                x: xPos,
-                y: yPos
-            };
-        }
-
-        const parentPosition = getPosition(e.currentTarget);
-        const x = e.clientX - parentPosition.x;
-        const y = e.clientY - parentPosition.y;
-        //console.log( 'x:', x, 'y:', y );
-
-        if (_self.clickCount === 1) {
-            _self.drawResult.x = x;
-            _self.drawResult.y = y;
-            _self.drawResult.w = 0; //reset
-            _self.drawResult.h = 0; //reset 
-            _self.clickCount++;
-        } else {
-            _self.drawResult.w = x - _self.drawResult.x;
-            _self.drawResult.h = y - _self.drawResult.y;
-            _self.clickCount = 1;
-
-            console.log(_self.drawResult);
-        }
-    }
-    */
-
     
     /*
         Create a modal
@@ -2225,7 +2195,7 @@
         document.querySelector( 'body' ).setAttribute( 'data-mode', 'build' );
 
         //determine which control icons to reveal for this mode, add each to the controls node
-        let controls = [ 'addAnnotation', 'addHotspot', 'addToDrawer', 'toggleBuildMode' ];
+        let controls = [ 'addAnnotation', 'addHotspot', 'toggleBuildMode', 'addToDrawer', 'info' ];
 
         //loop through the controls array and add each option to the control box.
         _self.modeControls.innerHTML = null;
@@ -2245,10 +2215,10 @@
 
         _self.local( 'set', 'mode', _self.mode );
 
-        document.querySelector( 'body' ).setAttribute( 'data-mode', 'view' );
+        document.querySelector( 'body' ).setAttribute( 'data-mode', 'view');
 
         //determine which control icons to reveal for this mode, add each to the controls node - for view mode we start with only the add comment
-        let controls = [ 'addComment' ];
+        let controls = [ 'addComment', 'info' ];
         let ableToAcessBuildMode = false;
 
         //if there is an active user already then see if that user can access build mode or not, if yes add the build mode toggle to the controls array above before iterating below
@@ -2257,7 +2227,7 @@
 
             if( typeof user !== 'undefined' ){
                 if( user.access === 'build' ){
-                    controls.push( 'toggleBuildMode' );
+                    controls.splice(1, 0, 'toggleBuildMode' ); //add the build toggle to the controls in the 2nd position
                     ableToAcessBuildMode = true;
                 }
             }
@@ -2333,6 +2303,16 @@
                         <title>icon_mode-build</title>
                         <g fill-rule="evenodd">
                             <path d="M30.7,27 L21.6,17.9 C22.5,15.6 22,12.9 20.1,11 C18.1,9 15.1,8.6 12.7,9.7 L17,14 L14,17 L9.6,12.7 C8.4,15.1 8.9,18.1 10.9,20.1 C12.8,22 15.5,22.5 17.8,21.6 L26.9,30.7 C27.3,31.1 27.9,31.1 28.3,30.7 L30.6,28.4 C31.1,28 31.1,27.3 30.7,27 Z" fill-rule="nonzero"></path>
+                        </g>
+                    </svg>
+                `
+                break;
+            case 'info':
+                icon = `
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <title>icon_info</title>
+                        <g fill-rule="evenodd">
+                            <path d="M19,15 L21,15 L21,17 L19,17 L19,15 Z M19,19 L21,19 L21,25 L19,25 L19,19 Z M20,10 C14.48,10 10,14.48 10,20 C10,25.52 14.48,30 20,30 C25.52,30 30,25.52 30,20 C30,14.48 25.52,10 20,10 Z M20,28 C15.59,28 12,24.41 12,20 C12,15.59 15.59,12 20,12 C24.41,12 28,15.59 28,20 C28,24.41 24.41,28 20,28 Z" fill-rule="nonzero"></path>
                         </g>
                     </svg>
                 `
@@ -2718,6 +2698,76 @@
         else{
             _self.enableViewMode();
         }
+    }
+
+    this.modeControlHandler_info = function(){
+        _self.modal(
+            'Information about this tool.',
+            `
+                <div class="info">
+                    <p class="headerText">Introduction</p>
+                    <p class="bodyText">This tool is intended to provide users with a complete walkthrough of what the final software experience will be like. It is comprised of static images (jpgs) with invisible hotspots that let users navigate through the application as if it was real software.</p>
+                    <p class="headerText">Annotations</p>
+                    <p class="bodyText">Annotations are verified and vetted business rules that should be considered as requirements for the application.</p>
+                    <p class="bodyText bold">There are two types of annotations:</p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span class="comment" data-type="logic"></span>
+                            <span><b>Logic:</b> Brown colored comments indicate logic that needs to be built into the applications</span>
+                        </span>
+                    </p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span class="comment" data-type="notification"></span>
+                            <span><b>Notification:</b> Green colored comments indicate a notification that will be needed. Details about the notification recipents and content may be included in the annotation or linked to an Issue in Gitlab</span>
+                        </span>
+                    </p>
+                    <p class="headerText">Comments</p>
+                    <p class="bodyText">Comments can be made by any user. They're intended for people to ask questions or post notes about something that isn't consider an official requirement.</p>
+                    <p class="bodyText bold">There are two types of comments:</p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span class="comment" data-type="comment"></span>
+                            <span><b>Note:</b> Pink color comments are notes left by any user. They should not be considered as a requirement. They will each be evaluated and dispositioned.</span>
+                        </span>
+                    </p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span class="comment" data-type="question"></span>
+                            <span><b>Questions:</b> Gray colored comments are questions that can be let by any user. Currently there is no notification method for informing users about a new question.</span>
+                        </span>
+                    </p>
+                    <p class="headerText">Status</p>
+                    <p class="bodyText">Each screen has a status represented by a circle in the bottom right corner. The color of the circle is an indication about the level of completeness of a screen.</p>
+                    <p class="bodyText bold">There are two four statuses:</p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span id="approved" class="status"></span>
+                            <span><b>Stakeholder Approved:</b> This screen has been viewed and vetted by stakeholders as being ready to build.</span>
+                        </span>
+                    </p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span id="inProgress" class="status"></span>
+                            <span><b>In Progress:</b> This screen is still evolving but it has been reviewed internally or by stakeholders and is considered fairly stable.</span>
+                        </span>
+                    </p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span id="conceptual" class="status"></span>
+                            <span><b>Conceptual:</b> This screen is a design concept. It is in the early phases of design and should be considered unstable and highly likely to change.</span>
+                        </span>
+                    </p>
+                    <p class="bodyText">
+                        <span class="flex flex--vertical-center">
+                            <span id="onHold" class="status"></span>
+                            <span><b>On Hold:</b> This screen is may be approved or conceptual, but for now it is on hold. It may be part of a future release but it not intended to be developed now.</span>
+                        </span>
+                    </p>
+                </div>
+            `
+        );
+
     }
 
     /*
@@ -3900,7 +3950,7 @@
     }
 
     /*
-    Get a specific comment by ID
+        Get a specific comment by ID
     */
     this.getComment = function( item, id ){
         const allComments = _self.getComments( item );
@@ -3908,6 +3958,61 @@
             return c.id === id;
         });
         return comment;
+    }
+
+    /*
+        Get all comments for a specific module (file)
+    */
+    this.getCommentsByModule = function( file, showResolved = false ){
+        let comments = [];
+
+        //loop through all data nodes in the file
+        //find comments for nodes using the _self.getComments function
+        //filter out any that are resolved (if showResolved is not true)
+        for( let data in _self.dataPieces[ file ] ){
+            const d = _self.dataPieces[ file ][ data ];
+            let nodeComments = _self.getComments( d );
+
+            if( nodeComments !== null ){
+                for( let c of nodeComments ){
+                    let slide = comments.find( (s) => {
+                        return s.slide === d.name;
+                    });
+                    if( typeof slide === 'undefined' ){
+                        comments.push({
+                            slide: d.name,
+                            img: d.img,
+                            comments: []
+                        });
+                        slide = comments.find( (s) => {
+                            return s.slide === d.name;
+                        });
+                    }
+                    slide.comments.push( c );
+                }
+            }
+        }
+
+        console.log( comments );
+
+        //add a slide for this
+    }
+
+    /*
+        Create a slide programmatically when needed
+        This slide does not get saved into the data and only exists temporarily.
+    */
+    this.createSlide = function( data ){
+
+        const slideData = {
+            "img": "issue/dashboard_IMB.jpg",
+            "id": _self.createGuiID(),
+            "name": "issue_dashboard_IMB"
+        }
+
+        
+
+
     }
 
 
