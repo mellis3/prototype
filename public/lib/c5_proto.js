@@ -42,6 +42,8 @@
     //view = limited functionality, can browse and navigate, can read comments and post questions
     //build = manage hotspots, modify any comment, add annotations, etc
     _self.mode = 'view';
+    _self.commentsVisible = true;
+    _self.annotationsVisible = true;
 
     //flag to be used when adding something
     //needed because when true if user clicks anywhere on the screen we'll know what to do with the click.
@@ -308,13 +310,13 @@
         node.id = el.name;
         node.className = "item active";
         node.innerHTML = `
-            <img class="image" src="img/${ el.img }" />
+            ${ el.img === null ? '' : `<img class="image" src="img/${ el.img }" />` }
             <div class="hotspots"></div>
             <div class="comments"></div>
             <div class="metadata">
                 <span class='lastUpdated timestamp'>Last Updated: <span id='lastMod'></span></span>
                 <span class='status' data-status='${ status }'><span>Status:</span> <span class="status-indicator">${ status }</span></span>
-                <button id="allCommentsByModule" class="button button--rounded">All <span style="text-transform: capitalize;">${ el.file }</span> Comments</button>
+                <button id="allCommentsByModule" class="button button--rounded" data-file="${ el.file }">All <span style="text-transform: capitalize;">${ el.file }</span> Comments</button>
                 ${ commentOnNode !== null ?
                     `<span class='meta-comments button button--rounded'><span class='count'>${ commentCount }</span> Comments on this page</span>`
                     :
@@ -427,8 +429,10 @@
         _self.activeSlide = el;
 
         //find the last modified date of the image
-        this.getImageModData( node, el );
-
+        if( el.img !== null ){
+            this.getImageModData( node, el );
+        }
+       
         //handle status area click
         if( _self.mode === 'build' ){
             node.querySelector( '.metadata .status' ).onclick = function(){
@@ -445,7 +449,7 @@
 
         node.querySelector( '#allCommentsByModule' ).onclick = function(){
             console.log( 'load all comments from a file' );
-            _self.getCommentsByModule( 'issue' );
+            _self.getCommentsByModule( this.getAttribute( 'data-file' ) );
         }
 
     };
@@ -2195,7 +2199,7 @@
         document.querySelector( 'body' ).setAttribute( 'data-mode', 'build' );
 
         //determine which control icons to reveal for this mode, add each to the controls node
-        let controls = [ 'addAnnotation', 'addHotspot', 'toggleBuildMode', 'addToDrawer', 'info' ];
+        let controls = [ 'addAnnotation', 'addHotspot', 'toggleBuildMode', 'addToDrawer', 'overflow' ];
 
         //loop through the controls array and add each option to the control box.
         _self.modeControls.innerHTML = null;
@@ -2218,7 +2222,7 @@
         document.querySelector( 'body' ).setAttribute( 'data-mode', 'view');
 
         //determine which control icons to reveal for this mode, add each to the controls node - for view mode we start with only the add comment
-        let controls = [ 'addComment', 'info' ];
+        let controls = [ 'addComment', 'overflow' ];
         let ableToAcessBuildMode = false;
 
         //if there is an active user already then see if that user can access build mode or not, if yes add the build mode toggle to the controls array above before iterating below
@@ -2307,12 +2311,12 @@
                     </svg>
                 `
                 break;
-            case 'info':
+            case 'overflow':
                 icon = `
                     <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <title>icon_info</title>
                         <g fill-rule="evenodd">
-                            <path d="M19,15 L21,15 L21,17 L19,17 L19,15 Z M19,19 L21,19 L21,25 L19,25 L19,19 Z M20,10 C14.48,10 10,14.48 10,20 C10,25.52 14.48,30 20,30 C25.52,30 30,25.52 30,20 C30,14.48 25.52,10 20,10 Z M20,28 C15.59,28 12,24.41 12,20 C12,15.59 15.59,12 20,12 C24.41,12 28,15.59 28,20 C28,24.41 24.41,28 20,28 Z" fill-rule="nonzero"></path>
+                            <path d="M14,18 C12.9,18 12,18.9 12,20 C12,21.1 12.9,22 14,22 C15.1,22 16,21.1 16,20 C16,18.9 15.1,18 14,18 Z M26,18 C24.9,18 24,18.9 24,20 C24,21.1 24.9,22 26,22 C27.1,22 28,21.1 28,20 C28,18.9 27.1,18 26,18 Z M20,18 C18.9,18 18,18.9 18,20 C18,21.1 18.9,22 20,22 C21.1,22 22,21.1 22,20 C22,18.9 21.1,18 20,18 Z" fill-rule="nonzero"></path>
                         </g>
                     </svg>
                 `
@@ -2700,6 +2704,183 @@
         }
     }
 
+
+    /*
+        Overflow menu in the actions bar
+    */
+    this.modeControlHandler_overflow = function(){
+
+        let modalContent = `
+            <div id="info" class="overflow_item">
+                <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <path d="M19,15 L21,15 L21,17 L19,17 L19,15 Z M19,19 L21,19 L21,25 L19,25 L19,19 Z M20,10 C14.48,10 10,14.48 10,20 C10,25.52 14.48,30 20,30 C25.52,30 30,25.52 30,20 C30,14.48 25.52,10 20,10 Z M20,28 C15.59,28 12,24.41 12,20 C12,15.59 15.59,12 20,12 C24.41,12 28,15.59 28,20 C28,24.41 24.41,28 20,28 Z" fill-rule="nonzero"></path>
+                </svg>
+                Information / Legend
+            </div>
+            ${ _self.commentsVisible === true ? `
+                <div id="hideComments" class="overflow_item">
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <path d="M20,14.6325 C22.76,14.6325 25,16.8725 25,19.6325 C25,20.1425 24.9,20.6325 24.76,21.0925 L27.82,24.1525 C29.21,22.9225 30.31,21.3825 31,19.6225 C29.27,15.2425 25,12.1325 20,12.1325 C18.73,12.1325 17.51,12.3325 16.36,12.7025 L18.53,14.8725 C19,14.7325 19.49,14.6325 20,14.6325 Z M10.71,11.2925 C10.32,11.6825 10.32,12.3125 10.71,12.7025 L12.68,14.6725 C11.06,15.9625 9.77,17.6625 9,19.6325 C10.73,24.0225 15,27.1325 20,27.1325 C21.52,27.1325 22.97,26.8325 24.31,26.3125 L27.03,29.0325 C27.42,29.4225 28.05,29.4225 28.44,29.0325 C28.83,28.6425 28.83,28.0125 28.44,27.6225 L12.13,11.2925 C11.74,10.9025 11.1,10.9025 10.71,11.2925 Z M20,24.6325 C17.24,24.6325 15,22.3925 15,19.6325 C15,18.8625 15.18,18.1325 15.49,17.4925 L17.06,19.0625 C17.03,19.2425 17,19.4325 17,19.6325 C17,21.2925 18.34,22.6325 20,22.6325 C20.2,22.6325 20.38,22.6025 20.57,22.5625 L22.14,24.1325 C21.49,24.4525 20.77,24.6325 20,24.6325 Z M22.97,19.3025 C22.82,17.9025 21.72,16.8125 20.33,16.6625 L22.97,19.3025 Z" fill-rule="nonzero"></path>
+                    </svg>
+                    Hide Comments
+                </div>
+            ` : `
+                <div id="showComments" class="overflow_item">
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <path d="M20,12 C15,12 10.73,15.11 9,19.5 C10.73,23.89 15,27 20,27 C25,27 29.27,23.89 31,19.5 C29.27,15.11 25,12 20,12 Z M20,24.5 C17.24,24.5 15,22.26 15,19.5 C15,16.74 17.24,14.5 20,14.5 C22.76,14.5 25,16.74 25,19.5 C25,22.26 22.76,24.5 20,24.5 Z M20,16.5 C18.34,16.5 17,17.84 17,19.5 C17,21.16 18.34,22.5 20,22.5 C21.66,22.5 23,21.16 23,19.5 C23,17.84 21.66,16.5 20,16.5 Z" fill-rule="nonzero"></path>
+                    </svg>
+                    Show Comments
+                </div>
+            ` }
+            ${ _self.annotationsVisible === true ? `
+                <div id="hideAnnotations" class="overflow_item">
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <path d="M20,14.6325 C22.76,14.6325 25,16.8725 25,19.6325 C25,20.1425 24.9,20.6325 24.76,21.0925 L27.82,24.1525 C29.21,22.9225 30.31,21.3825 31,19.6225 C29.27,15.2425 25,12.1325 20,12.1325 C18.73,12.1325 17.51,12.3325 16.36,12.7025 L18.53,14.8725 C19,14.7325 19.49,14.6325 20,14.6325 Z M10.71,11.2925 C10.32,11.6825 10.32,12.3125 10.71,12.7025 L12.68,14.6725 C11.06,15.9625 9.77,17.6625 9,19.6325 C10.73,24.0225 15,27.1325 20,27.1325 C21.52,27.1325 22.97,26.8325 24.31,26.3125 L27.03,29.0325 C27.42,29.4225 28.05,29.4225 28.44,29.0325 C28.83,28.6425 28.83,28.0125 28.44,27.6225 L12.13,11.2925 C11.74,10.9025 11.1,10.9025 10.71,11.2925 Z M20,24.6325 C17.24,24.6325 15,22.3925 15,19.6325 C15,18.8625 15.18,18.1325 15.49,17.4925 L17.06,19.0625 C17.03,19.2425 17,19.4325 17,19.6325 C17,21.2925 18.34,22.6325 20,22.6325 C20.2,22.6325 20.38,22.6025 20.57,22.5625 L22.14,24.1325 C21.49,24.4525 20.77,24.6325 20,24.6325 Z M22.97,19.3025 C22.82,17.9025 21.72,16.8125 20.33,16.6625 L22.97,19.3025 Z" fill-rule="nonzero"></path>
+                    </svg>
+                    Hide Annotations
+                </div>
+            ` : `
+                <div id="showAnnotations" class="overflow_item">
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <path d="M20,12 C15,12 10.73,15.11 9,19.5 C10.73,23.89 15,27 20,27 C25,27 29.27,23.89 31,19.5 C29.27,15.11 25,12 20,12 Z M20,24.5 C17.24,24.5 15,22.26 15,19.5 C15,16.74 17.24,14.5 20,14.5 C22.76,14.5 25,16.74 25,19.5 C25,22.26 22.76,24.5 20,24.5 Z M20,16.5 C18.34,16.5 17,17.84 17,19.5 C17,21.16 18.34,22.5 20,22.5 C21.66,22.5 23,21.16 23,19.5 C23,17.84 21.66,16.5 20,16.5 Z" fill-rule="nonzero"></path>
+                    </svg>
+                    Show Annotations
+                </div>
+            ` }
+        `
+
+        //calculate where to display the modal relative to the hotspot clicked
+        const modalW = 250;
+        const modalH = 152;
+        let x = event.clientX;
+        if( ( x + modalW ) > window.innerWidth ){
+            x = x - modalW < 0 ? 10 : x - modalW;
+        }
+        let y = event.clientY;
+        if( ( y + modalH ) > window.innerHeight ){
+            y = y - modalH < 0 ? 10 : y - modalH;
+        }
+
+        _self.modal(
+            null,
+            modalContent,
+            {
+                w: modalW,
+                h: modalH,
+                x: x,
+                y: y
+            }
+        );
+
+        let options = document.querySelectorAll( '.modal .overflow_item' );
+        for( let o of options ){
+            o.addEventListener( 'click', function(){
+                const action = o.getAttribute( 'id' );
+
+                //hide the overflow menu modal
+                document.querySelector( '.modal' ).remove();
+
+                //show the info modal
+                if( action === 'info' ){
+                    _self.modal(
+                        'Information about this tool.',
+                        `
+                            <div class="info">
+                                <p class="headerText">Introduction</p>
+                                <p class="bodyText">This tool is intended to provide users with a complete walkthrough of what the final software experience will be like. It is comprised of static images (jpgs) with invisible hotspots that let users navigate through the application as if it was real software.</p>
+                                <p class="headerText">Annotations</p>
+                                <p class="bodyText">Annotations are verified and vetted business rules that should be considered as requirements for the application.</p>
+                                <p class="bodyText bold">There are two types of annotations:</p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span class="comment" data-type="logic"></span>
+                                        <span><b>Logic:</b> Brown colored comments indicate logic that needs to be built into the applications</span>
+                                    </span>
+                                </p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span class="comment" data-type="notification"></span>
+                                        <span><b>Notification:</b> Green colored comments indicate a notification that will be needed. Details about the notification recipents and content may be included in the annotation or linked to an Issue in Gitlab</span>
+                                    </span>
+                                </p>
+                                <p class="headerText">Comments</p>
+                                <p class="bodyText">Comments can be made by any user. They're intended for people to ask questions or post notes about something that isn't consider an official requirement.</p>
+                                <p class="bodyText bold">There are two types of comments:</p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span class="comment" data-type="comment"></span>
+                                        <span><b>Note:</b> Pink color comments are notes left by any user. They should not be considered as a requirement. They will each be evaluated and dispositioned.</span>
+                                    </span>
+                                </p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span class="comment" data-type="question"></span>
+                                        <span><b>Questions:</b> Gray colored comments are questions that can be let by any user. Currently there is no notification method for informing users about a new question.</span>
+                                    </span>
+                                </p>
+                                <p class="headerText">Status</p>
+                                <p class="bodyText">Each screen has a status represented by a circle in the bottom right corner. The color of the circle is an indication about the level of completeness of a screen.</p>
+                                <p class="bodyText bold">There are two four statuses:</p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span id="approved" class="status"></span>
+                                        <span><b>Stakeholder Approved:</b> This screen has been viewed and vetted by stakeholders as being ready to build.</span>
+                                    </span>
+                                </p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span id="inProgress" class="status"></span>
+                                        <span><b>In Progress:</b> This screen is still evolving but it has been reviewed internally or by stakeholders and is considered fairly stable.</span>
+                                    </span>
+                                </p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span id="conceptual" class="status"></span>
+                                        <span><b>Conceptual:</b> This screen is a design concept. It is in the early phases of design and should be considered unstable and highly likely to change.</span>
+                                    </span>
+                                </p>
+                                <p class="bodyText">
+                                    <span class="flex flex--vertical-center">
+                                        <span id="onHold" class="status"></span>
+                                        <span><b>On Hold:</b> This screen is may be approved or conceptual, but for now it is on hold. It may be part of a future release but it not intended to be developed now.</span>
+                                    </span>
+                                </p>
+                            </div>
+                        `
+                    );
+                }
+
+                //hide comments
+                if( action === 'hideComments' ){
+                    _self.commentsVisible = false;
+                    _self.wrap.classList.add( 'hideComments' );
+                }
+
+                //show comments
+                if( action === 'showComments' ){
+                    _self.commentsVisible = true;
+                    _self.wrap.classList.remove( 'hideComments' );
+                }
+
+                //hide annotations
+                if( action === 'hideAnnotations' ){
+                    _self.annotationsVisible = false;
+                    _self.wrap.classList.add( 'hideAnnotations' );
+                }
+
+                //show comments
+                if( action === 'showAnnotations' ){
+                    _self.annotationsVisible = true;
+                    _self.wrap.classList.remove( 'hideAnnotations' );
+                }
+            });
+        }
+
+
+    }
+
+
+    /*
     this.modeControlHandler_info = function(){
         _self.modal(
             'Information about this tool.',
@@ -2769,6 +2950,7 @@
         );
 
     }
+    */
 
     /*
         Modal to request auth for access to build mode
@@ -3946,6 +4128,7 @@
                 }
             }
         }
+
         return comments;
     }
 
@@ -3971,10 +4154,14 @@
         //filter out any that are resolved (if showResolved is not true)
         for( let data in _self.dataPieces[ file ] ){
             const d = _self.dataPieces[ file ][ data ];
+            
             let nodeComments = _self.getComments( d );
 
             if( nodeComments !== null ){
                 for( let c of nodeComments ){
+                    if( c.type === 'deleted' ){
+                        continue;
+                    }
                     let slide = comments.find( (s) => {
                         return s.slide === d.name;
                     });
@@ -3996,21 +4183,192 @@
         console.log( comments );
 
         //add a slide for this
+        _self.createSlide( comments, `all_${ file }_comments`, 'allComments' );
     }
 
     /*
         Create a slide programmatically when needed
         This slide does not get saved into the data and only exists temporarily.
     */
-    this.createSlide = function( data ){
+    this.createSlide = function( data, name, type ){
 
         const slideData = {
-            "img": "issue/dashboard_IMB.jpg",
             "id": _self.createGuiID(),
-            "name": "issue_dashboard_IMB"
+            "name": name
         }
 
+        if( typeof data.img !== 'undefined' ){
+            slideData.img = data.img;
+        }else{
+            slideData.img = null;
+        }
+
+        //hide any active slides
+        const activeItems = _self.wrap.querySelectorAll('.item.active');
+        if( activeItems.length > 0 ){
+            for (let i of activeItems) {
+                i.classList.remove('active');
+            }
+        }
+
+        //append the new slide
+        _self.node( slideData, _self.wrap, _self.mainContext, false );
         
+        const slide = _self.wrap.querySelector( '.active' );
+        slide.classList.add( 'dynamic' );
+
+        //custom stuff
+        //these dynamically created slides will typically have custom content on them, so add that content now based on the Type prop.
+        if( type === 'allComments' ){
+
+            //status sort-by also has filters to 
+            let filterOptions = [
+                {
+                    name: 'Open Comments',
+                    value: true
+                },
+                {
+                    name: 'Completed',
+                    value: false
+                }
+            ];
+
+            //filter the data if needed
+            //apply or remove the filter from the array above
+            function adjustFilters( filter ){
+                let item = filterOptions.find( option => {
+                    return option.name === filter;
+                });
+                item.value = !item.value;
+            }
+
+            //determine if a filter is active
+            function filterActive( filter ){
+                const item = filterOptions.find( option => {
+                    return option.name.toLowerCase() === filter.toLowerCase();
+                });
+                return item.value === true ? 'active' : 'disabled';
+            }
+
+        
+            function generateCommentHTML(){
+
+                //use the name prop but remove the underscores and replace with spaces
+                const title = name.replace( /_/g, ' ' );
+
+                //build the HTML to display a slide with it's comments
+                let slides = '';
+                
+                //each node in the data array is a slide with a comments array
+                for( let d of data ){
+
+                    //generate the HTML for each comment within this slide
+                    let comments = '';
+                    for( let c of d.comments ){
+
+                        //skip deleted comments
+                        if( c.type === 'deleted' ){
+                            continue;
+                        }
+
+                        //if the filter isn't active for this comment then skip
+                        //not all comments have the resolved prop - it's newer
+                        if( typeof c.resolved !== 'undefined' ){
+
+                            //if resolved and the filter is set to hide resolved items
+                            if( c.resolved === true && filterOptions[ 1 ].value === false ){
+                                continue;
+                            }
+
+                            //if not resolved and the filter is set to hide open items
+                            if( c.resolved === false && filterOptions[ 0 ].value === false ){
+                                continue;
+                            }
+                        }
+                        
+                        //if the resolved prop doesn't exist on the comment then assume it's open
+                        else{
+                            if( filterOptions[ 0 ].value === false ){
+                                continue;
+                            }
+                        }
+
+
+                        comments += `
+                            <div class="comment allComments--slide--comment" data-type='${ c.type }' data-resolved='${ c.resolved === true ? 'true' : 'false' }'>
+                                <p>${ c.comment }</p>
+                            </div>
+                        `;
+                    }
+
+                    //generate the HTML for this slide
+                    const slideTitle = d.slide.replace( /_/g, ' ' );
+                    slides += `
+                        <div class='allComments--slide'>
+                            <div class="allComments--slide--info">
+                                <a href="/?id=${ d.slide }&context=protoWrap">
+                                    <p>${ slideTitle }</p>
+                                    <img src="img/${ d.img }" />
+                                </a>
+                            </div>
+                            <div class="allComments--slide--comments">
+                                ${ comments }
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                slide.innerHTML = `
+                    <div class='slideHeader'>
+                        <h1 class='slideHeader--title'>${ title }</h1>
+                    </div>
+                    <div class="controls">
+                        <div class="features_sort">
+                            <span>Sort:</span>
+                            <div class="features_sort_option active" id="slideName">
+                                Slide Name
+                            </div>
+                        </div>
+                        <div class="features_filter">
+                            <span>Filter:</span>
+                            <div class="features_filter_option ${ filterActive( 'Open Comments' ) }" id="Open Comments">
+                                Open Comments
+                            </div>
+                            <div class="features_filter_option ${ filterActive( 'Completed' ) }" id="Completed">
+                                Completed Comments
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content">${ slides }</div>
+                `
+
+
+                //setup the filtering options
+                const filters = slide.querySelectorAll( '.features_filter_option' );
+                for( let f of filters ){
+                    f.addEventListener( 'click', () => filterBy( f.getAttribute( 'id' ) ) );
+                }
+
+
+                /*
+                    filter by
+                */
+                function filterBy( filterProp ){
+                    event.stopPropagation();
+
+                    //remove the items
+                    slide.innerHTML = '';
+
+                    //update the filters
+                    adjustFilters( filterProp );
+
+                    //repopulate
+                    generateCommentHTML();
+                }
+
+            }
+            generateCommentHTML();
+        }
 
 
     }
