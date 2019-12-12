@@ -4,7 +4,7 @@ const data = {
 
     //pattern for a slide
     "issue_owner": {
-        "id": "3ce66314-52cb-4681-b850-9c256238b2d2", 
+        "id": "", //use proto.createGuiID() to create a GuiID and paste in here
         "name": "issue_owner", 
         "img": "issue/owner.jpg", 
         "hotspots": [],
@@ -19,16 +19,6 @@ const data = {
             "h": 603,
             "img": "issue/_forms/form0_issueOwner.jpg",
             "maxImgWidth": 450,
-            "layers":[
-                {
-                    "x":418,
-                    "y":522,
-                    "w":54,
-                    "h":54,
-                    "img":"document_new_FAB.png",
-                    "hotspots":[]
-                }
-            ],
             "hotspots": [],
             "comments": []
         }]
