@@ -25,6 +25,8 @@
     --color-logic-100:              rgba( 154, 69, 24, 1 );
     --color-notification-50:        rgba( 25, 173, 155, 0.5 );
     --color-notification-100:       rgba( 25, 173, 155, 1 );
+    --color-design-50:              rgba( 225, 230, 45, 0.5 );
+    --color-design-100:             rgba( 225, 230, 45, 1 );
 
     /* status */
     --color-status-green:             #60be4e;
@@ -163,7 +165,8 @@ body.addingHotspot::after{
     pointer-events: none;
 }
 #protoWrap.hideAnnotations .comment[data-type='logic'],
-#protoWrap.hideAnnotations .comment[data-type='notification']{
+#protoWrap.hideAnnotations .comment[data-type='notification'],
+#protoWrap.hideAnnotations .comment[data-type='design']{
     opacity: 0;
     pointer-events: none
 }
@@ -565,9 +568,6 @@ body.addingHotspot::after{
         .comment-content .resolve label{
             margin-top: 0.25em;
         }
-        .comment-content .resolve[data-resolved='true']{
-
-        }
 
 
     .comment-content .actions {
@@ -638,11 +638,6 @@ body.addingHotspot::after{
     background: var( --color-comment-100 );
 }
 
-/*
-.comment[data-type="comment"] .comment-content {
-    color: rgba(206, 31, 245, 1);
-}
-*/
 
 /* question */
 .comment[data-type="question"]::before {
@@ -663,11 +658,6 @@ body.addingHotspot::after{
     background: var( --color-notification-100 );
 }
 
-/*
-.comment[data-type="notification"] .comment-content {
-    color: rgba(25, 173, 155, 1);
-}
-*/
 
 /* logic */
 .comment[data-type="logic"]::before {
@@ -678,11 +668,16 @@ body.addingHotspot::after{
     background: var( --color-logic-100 );
 }
 
-/*
-.comment[data-type="logic"] .comment-content {
-    color: rgba(154, 69, 24, 1);
+/* design note */
+.comment[data-type="design"]::before {
+    background: var( --color-design-50 );
 }
-*/
+
+.comment[data-type="design"]::after {
+    background: var( --color-design-100 );
+    color: var( --color-dark );
+}
+
 
 .ql-tooltip{
     z-index: 10000;

@@ -102,8 +102,10 @@ function checkDirectory( directory, callback ){
     //if directory does not exist
     if( !fs.existsSync( directory ) ){
         //make directory
+        //recursive option is needed to make multiple levels of directory
+        //without recursive the mkdirSync will fail if any of the parent folders don't exist yet
         try{
-            fs.mkdirSync( directory );
+            fs.mkdirSync( directory, { recursive: true } );
         }
         //failed to make directory for some error
         catch( error ){

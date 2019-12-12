@@ -26,6 +26,7 @@
         global: null,
         feature: null,
         issue: null,
+        issueNPO: null,
         assessment: null,
         event: null,
         overlay: null,
@@ -1078,6 +1079,7 @@
                 <option value="notification" ${ commentData.type === 'notification' ? 'selected' : null }>Notification</option>
                 <option value="comment" ${ commentData.type === 'comment' ? 'selected' : null }>Note</option>
                 <option value="question" ${ commentData.type === 'question' ? 'selected' : null }>Question</option>
+                <option value="design" ${ commentData.type === 'design' ? 'selected' : null }>Design Note</option>
             `;
         }
         else if( commentData.user === _self.activeUser ){
@@ -1255,7 +1257,9 @@
             else{
                 expandedComment.querySelector( '#updateComment' ).onclick = function(){
                     event.stopPropagation();
-                    _self.updateComment( commentData, expandedComment );
+                    _self.updateComment( commentData, expandedComment, function(){
+                        _self.updateCommentCallback( commentNode, commentData );
+                    } );
                 }
     
                 expandedComment.querySelector( '#deleteComment' ).onclick = function(){
@@ -2854,6 +2858,12 @@
                 if( action === 'hideComments' ){
                     _self.commentsVisible = false;
                     _self.wrap.classList.add( 'hideComments' );
+
+                    let count = 1;
+                    if( _self.annotationsVisible === false ){
+                        count++;
+                    }
+                    _self.modeControls.querySelector( '#overflow' ).setAttribute( 'data-count', count )
                 }
 
                 //show comments
@@ -2879,78 +2889,6 @@
 
     }
 
-
-    /*
-    this.modeControlHandler_info = function(){
-        _self.modal(
-            'Information about this tool.',
-            `
-                <div class="info">
-                    <p class="headerText">Introduction</p>
-                    <p class="bodyText">This tool is intended to provide users with a complete walkthrough of what the final software experience will be like. It is comprised of static images (jpgs) with invisible hotspots that let users navigate through the application as if it was real software.</p>
-                    <p class="headerText">Annotations</p>
-                    <p class="bodyText">Annotations are verified and vetted business rules that should be considered as requirements for the application.</p>
-                    <p class="bodyText bold">There are two types of annotations:</p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span class="comment" data-type="logic"></span>
-                            <span><b>Logic:</b> Brown colored comments indicate logic that needs to be built into the applications</span>
-                        </span>
-                    </p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span class="comment" data-type="notification"></span>
-                            <span><b>Notification:</b> Green colored comments indicate a notification that will be needed. Details about the notification recipents and content may be included in the annotation or linked to an Issue in Gitlab</span>
-                        </span>
-                    </p>
-                    <p class="headerText">Comments</p>
-                    <p class="bodyText">Comments can be made by any user. They're intended for people to ask questions or post notes about something that isn't consider an official requirement.</p>
-                    <p class="bodyText bold">There are two types of comments:</p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span class="comment" data-type="comment"></span>
-                            <span><b>Note:</b> Pink color comments are notes left by any user. They should not be considered as a requirement. They will each be evaluated and dispositioned.</span>
-                        </span>
-                    </p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span class="comment" data-type="question"></span>
-                            <span><b>Questions:</b> Gray colored comments are questions that can be let by any user. Currently there is no notification method for informing users about a new question.</span>
-                        </span>
-                    </p>
-                    <p class="headerText">Status</p>
-                    <p class="bodyText">Each screen has a status represented by a circle in the bottom right corner. The color of the circle is an indication about the level of completeness of a screen.</p>
-                    <p class="bodyText bold">There are two four statuses:</p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span id="approved" class="status"></span>
-                            <span><b>Stakeholder Approved:</b> This screen has been viewed and vetted by stakeholders as being ready to build.</span>
-                        </span>
-                    </p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span id="inProgress" class="status"></span>
-                            <span><b>In Progress:</b> This screen is still evolving but it has been reviewed internally or by stakeholders and is considered fairly stable.</span>
-                        </span>
-                    </p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span id="conceptual" class="status"></span>
-                            <span><b>Conceptual:</b> This screen is a design concept. It is in the early phases of design and should be considered unstable and highly likely to change.</span>
-                        </span>
-                    </p>
-                    <p class="bodyText">
-                        <span class="flex flex--vertical-center">
-                            <span id="onHold" class="status"></span>
-                            <span><b>On Hold:</b> This screen is may be approved or conceptual, but for now it is on hold. It may be part of a future release but it not intended to be developed now.</span>
-                        </span>
-                    </p>
-                </div>
-            `
-        );
-
-    }
-    */
 
     /*
         Modal to request auth for access to build mode
@@ -3309,6 +3247,7 @@
             }
         );
     }
+
 
     /*
         Add new Hotspot
@@ -3732,6 +3671,14 @@
                 }
             }
         );
+    }
+
+     /*
+        Callback for updating a hotspot, change color etc as needed
+    */
+    this.updateCommentCallback = function( node, h ){
+        console.log( 'update hotspot' );
+        node.setAttribute( 'data-type', h.type );
     }
 
     /*
