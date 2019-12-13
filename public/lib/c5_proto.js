@@ -45,6 +45,7 @@
     _self.mode = 'view';
     _self.commentsVisible = true;
     _self.annotationsVisible = true;
+    _self.currentModal = null;
 
     //flag to be used when adding something
     //needed because when true if user clicks anywhere on the screen we'll know what to do with the click.
@@ -2045,7 +2046,7 @@
     /*
         Create a modal
     */
-    this.modal = function( title, content, position = null, id = null ){
+    this.modal = function( title, content, position = null, id ){
         const node = document.createElement('div');
         node.className = `modal`;
         node.innerHTML = `
@@ -2082,9 +2083,19 @@
         }
         document.querySelector( 'body' ).appendChild( node );
 
+        _self.currentModal = id;
+
         function closeModal(){
-            node.remove();
+            _self.closeModal( node );
         }
+    }
+
+    /*
+        Close a modal
+    */
+    this.closeModal = function( node ){
+        node.remove();
+            _self.currentModal = null;
     }
 
     /*
@@ -2364,6 +2375,10 @@
         //if not ask for their name
         if( _self.activeUser === null ){
 
+            if( _self.currentModal === 'newUser' ){
+                return false;
+            }
+
             //select user, enter password
             //enter a password to access build mode
             _self.modal(
@@ -2391,7 +2406,9 @@
                         id="addNonBuildUser"
                         class="button"
                     >Submit</button>
-                </div>`
+                </div>`,
+                null,
+                'newUser'
             );
 
             //focus the first field
@@ -2431,6 +2448,10 @@
         //show modal to ask which type of hotspot to add
         //turn on adding hotspot mode
         else{
+
+            if( _self.currentModal === 'addHotspot' ){
+                return false;
+            }
 
             //show the modal for adding to drawer
             //build the modal
@@ -2475,21 +2496,22 @@
                     h: modalH,
                     x: x,
                     y: y
-                }
+                },
+                'addHotspot'
             );
 
             document.querySelector( '.modal #new' ).onclick = function(){
                 event.stopPropagation();
                 _self.setupCommentMode( 'addingHotspot', '#addHotspot' );
 
-                document.querySelector( '.modal' ).remove();
+                _self.closeModal( document.querySelector( '.modal#addHotspot' ) );
             }
 
             document.querySelector( '.modal #global' ).onclick = function(){
                 event.stopPropagation();
 
                 //remove the current modal
-                document.querySelector( '.modal' ).remove();
+                _self.closeModal( document.querySelector( '.modal#addHotspot' ) );
 
                 //launch a modal to browse all global hotspots
                 let globalHotspots = '';
@@ -2512,7 +2534,9 @@
                     'Browse Global Hotspots',
                     `<div class="globalHotspotList">
                         ${ globalHotspots }
-                    </div>`
+                    </div>`,
+                    null,
+                    'browseGlobalHotspots'
                 );
 
                 let hotspotOptions = document.querySelectorAll( '.globalHotspotList-item' );
@@ -2525,7 +2549,7 @@
                         _self.setupCommentMode( 'addingGlobalHotspot', '#addHotspot' );
                         _self.newGlobalHotspotData = _self.dataPieces.global[ id ];
 
-                        document.querySelector( '.modal' ).remove();
+                        _self.closeModal( document.querySelector( '.modal#browseGlobalHotspots' ) );
                         
                     }
 
@@ -2548,6 +2572,10 @@
                             y = y - modalH < 0 ? 10 : y - modalH;
                         }
 
+                        if( _self.currentModal === 'globalHotspotDetails' ){
+                            return false;
+                        }
+
                         _self.modal(
                             'hotspot details',
                             `
@@ -2564,7 +2592,8 @@
                                 h: modalH,
                                 x: x,
                                 y: y
-                            }
+                            },
+                            'globalHotspotDetails'
                         );
                     }
                 }
@@ -2639,7 +2668,8 @@
                     h: modalH,
                     x: x,
                     y: y
-                }
+                },
+                'addToDrawer'
             );
 
             document.querySelector( '.modal #updateSlide' ).onclick = function(){
@@ -2664,7 +2694,8 @@
                                 _self.toast( 'adding slide to the drawer failed!', 'error' );
                             }else{
                                 _self.toast( 'slide successfully added from the drawer!', 'success' );
-                                document.querySelector( '.modal' ).remove();
+
+                                _self.closeModal( document.querySelector( '.modal#addToDrawer' ) );
                             }  
                         }
                     );
@@ -2713,6 +2744,10 @@
         Overflow menu in the actions bar
     */
     this.modeControlHandler_overflow = function(){
+
+        if( _self.currentModal === 'overflow' ){
+            return false;
+        }
 
         let modalContent = `
             <div id="info" class="overflow_item">
@@ -2773,7 +2808,8 @@
                 h: modalH,
                 x: x,
                 y: y
-            }
+            },
+            'overflow'
         );
 
         let options = document.querySelectorAll( '.modal .overflow_item' );
@@ -2782,10 +2818,15 @@
                 const action = o.getAttribute( 'id' );
 
                 //hide the overflow menu modal
-                document.querySelector( '.modal' ).remove();
+                _self.closeModal( document.querySelector( '.modal#overflow' ) );
 
                 //show the info modal
                 if( action === 'info' ){
+
+                    if( _self.currentModal === 'information' ){
+                        return false;
+                    }
+
                     _self.modal(
                         'Information about this tool.',
                         `
@@ -2850,7 +2891,9 @@
                                     </span>
                                 </p>
                             </div>
-                        `
+                        `,
+                        null,
+                        'information'
                     );
                 }
 
@@ -2930,7 +2973,9 @@
                         id="checkBuildCredentials"
                         class="button"
                     >Submit</button>
-                </div>`
+                </div>`,
+                null,
+                'login'
             );
 
             //focus the first field
@@ -2962,7 +3007,7 @@
                         _self.toast( data.error, 'error' );
                     }else{
                         //close the modal
-                        document.querySelector( '.modal' ).remove();
+                        _self.closeModal( document.querySelector( '.modal#login' ) );
 
                         //store the user as recurring so they don't have to do this much
                         _self.local( 'set', 'user', user );
@@ -3022,7 +3067,7 @@
                     _self.users.push( data.user );
 
                     //close the modal
-                    document.querySelector( '.modal' ).remove();
+                    _self.closeModal( document.querySelector( '.modal#newUser' ) );
 
                     //resume the comment addition
                     _self.modeControlHandler_addComment();
@@ -3040,6 +3085,10 @@
         Edit a hotspot
     */
     this.editHotspot = function( event, node, h ){
+
+        if( _self.currentModal === 'editHotspot' ){
+            return false;
+        }
 
         const isNew = node.getAttribute( 'data-new' ) === 'true' ? true : false;
 
@@ -3118,7 +3167,8 @@
                 h: modalH,
                 x: x,
                 y: y
-            }
+            },
+            'editHotspot'
         );
 
 
@@ -3130,7 +3180,7 @@
             document.querySelector( '.modal #deleteHotspot' ).onclick = function(){
                 event.stopPropagation();
     
-                document.querySelector( '.modal' ).remove();
+                _self.closeModal( document.querySelector( '.modal#editHotspot' ) );
                 node.remove();
             }
 
@@ -3205,7 +3255,7 @@
                     }
 
                    _self.deleteGlobalHotspot( data, function(){
-                        document.querySelector( '.modal' ).remove();
+                        _self.closeModal( document.querySelector( '.modal#editHotspot' ) );
                         node.remove();
                     } );
                 }
@@ -3215,7 +3265,7 @@
                     h.state = 'deleted';
 
                     _self.updateHotspot( h, function(){
-                        document.querySelector( '.modal' ).remove();
+                        self.closeModal( document.querySelector( '.modal#editHotspot' ) );
                         node.remove();
                     } );
                 }
@@ -3816,6 +3866,10 @@
     this.changeStatus = function(){
         console.log( 'change slide status' );
 
+        if( _self.currentModal === 'changeStatus' ){
+            return false;
+        }
+
         //determine current status
         const node = document.querySelector( '.item.active .metadata .status' );
         const currStatus = node.getAttribute( 'data-status' );
@@ -3861,7 +3915,8 @@
                 h: modalH,
                 x: x,
                 y: y
-            }
+            },
+            'changeStatus'
         );
 
         for( let i of document.querySelectorAll( '.modal-input' ) ){
@@ -4616,7 +4671,7 @@
         //close any open modals
         const openModals = document.querySelectorAll( '.modal' );
         for( let m of openModals ){
-            m.remove();
+            self.closeModal( m );
         }
 
         //close any open quill editors
