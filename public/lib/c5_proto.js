@@ -1127,6 +1127,7 @@
             create the new comment node
             outside the current wrap so it isn't cropped off
             TO DO: bind it to the node so it scrolls with it
+            also could consider using a positional modal instead of this custom modal.
         */
 
         const expandedComment = document.createElement('div');
@@ -1223,7 +1224,18 @@
                 expandedComment.querySelector( '#updateComment' ).onclick = function(){
                     event.stopPropagation();
 
+                    const btn = this;
+
+                    //disable the button so it can't be clicked over and over
+                    btn.classList.add( 'disabled' );
+
+
+                    //run the new comment function
                     _self.newComment( commentData, expandedComment, function( res, returnedData ){
+
+                        //callbac; when successful.
+                        //not called if there was an error creating the comment
+
                         //add the comment to the data that currently exists on this page
                         //on page refresh it will pull what's in the database, but we need that data to be available now also.
                         let commentForm = _self.dataPieces[ returnedData.file ][ returnedData.name ];
@@ -1242,6 +1254,10 @@
 
                         //remove the new comment flag from this comment
                         commentNode.setAttribute( 'data-new', false );
+
+                        //close the modal
+                        expandedComment.remove();
+    
                     } );
                 }
 
