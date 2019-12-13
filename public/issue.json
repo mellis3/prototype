@@ -112,16 +112,30 @@
             "file": "issue",
             "name": "issue_dashboard"
         }, {
-            "type": "logic",
+            "type": "comment",
             "x": 1200,
             "y": 230,
-            "comment": "FLAGS - specific data would cause flags to show up on the grid and on the cards. EC flag appears when EC says the issue is NTS reportable. NPO flag appears when the issue was identified by NPO (correspondence or NPO assessment as the parent)",
+            "comment": "FLAGS - specific data would cause flags to show up on the grid and on the cards. NTS comes from when EC says the issue is NTS reportable etc.",
             "id": "0c043825-4234-4314-87f3-39e1bec25ccb",
             "file": "issue",
             "name": "issue_dashboard",
+            "updatedOn": "2019-12-09T15:58:01.851Z",
+            "resolved": false
+        }, {
+            "id": "5a5104d5-8666-4c2a-bed3-19725eb48096",
+            "type": "deleted",
+            "x": 812,
+            "y": 118,
+            "comment": "new test comment\n",
             "user": "1",
-            "updatedOn": "2019-12-04T15:11:00.385Z",
-            "resolved": true
+            "updatedOn": "2019-12-13T16:13:25.687Z",
+            "file": "issue",
+            "name": "issue_dashboard",
+            "quill": {
+                "ops": [{
+                    "insert": "new test comment\n"
+                }]
+            }
         }],
         "id": "a0fa5003-0197-4df0-9cec-551d4c29189e",
         "name": "issue_dashboard"
@@ -345,15 +359,13 @@
             "name": "issue_closeCard"
         }],
         "comments": [{
-            "type": "logic",
-            "x": 495,
+            "type": "deleted",
+            "x": 595,
             "y": 160,
-            "comment": "Show step 1 if the Issue owner was not entered when the issue was created using the stub card. If Issue Owner was already assigned, then don't show step 1 at all. Information step would be step 1",
+            "comment": "Show step 1 if the Issue owner was not entered when the issue was created using the stub card.",
             "id": "d0ede649-2c7b-4e50-86fb-006951b04b34",
             "file": "issue",
-            "name": "issue_owner",
-            "user": "1",
-            "updatedOn": "2019-11-25T14:21:08.830Z"
+            "name": "issue_owner"
         }, {
             "type": "logic",
             "x": 495,
@@ -386,11 +398,18 @@
                 "type": "logic",
                 "x": 400,
                 "y": 80,
-                "comment": "If site === Y12 assign To-Do to Seth Bowman.<br/>If site === Pantex assign to Darla.<br/>Get site from parent object site.<br/>If no site can be derived from parent then assign to-do to both.",
+                "comment": "If site === Y12 assign To-Do to Seth Bowman. If site === Pantex assign to Darla. Get site from parent object site. If no site can be derived from parent then assign to-do to both.\n",
                 "id": "3034e57a-2e39-4360-bcfb-34df97e579e9",
                 "file": "issue",
                 "name": "issue_owner",
-                "scrollZone": "issue_form0"
+                "scrollZone": "issue_form0",
+                "user": "1",
+                "updatedOn": "2019-12-03T15:22:56.733Z",
+                "quill": {
+                    "ops": [{
+                        "insert": "If site === Y12 assign To-Do to Seth Bowman. If site === Pantex assign to Darla. Get site from parent object site. If no site can be derived from parent then assign to-do to both.\n"
+                    }]
+                }
             }, {
                 "id": "a46526d9-1053-4501-b03a-92580667debc",
                 "type": "logic",
@@ -457,6 +476,31 @@
             "updatedOn": "2019-11-18T17:03:00.267Z",
             "file": "issue",
             "name": "issue_info"
+        }, {
+            "id": "f93cc0b3-f86c-4c0b-aed5-55c6b324e84d",
+            "type": "deleted",
+            "x": 441,
+            "y": 557,
+            "comment": "test comment outside of scrollZone",
+            "user": "1",
+            "updatedOn": "2019-11-14T22:25:54.297Z",
+            "file": "issue",
+            "name": "issue_info"
+        }, {
+            "id": "d90c2fe7-6fe6-41f2-8373-d6e4f563ccc4",
+            "type": "comment",
+            "x": 691,
+            "y": 716,
+            "comment": "Tagging - add a tag to track things like a project etc.\n",
+            "user": "1",
+            "updatedOn": "2019-12-03T15:50:58.805Z",
+            "file": "issue",
+            "name": "issue_info",
+            "quill": {
+                "ops": [{
+                    "insert": "Tagging - add a tag to track things like a project etc.\n"
+                }]
+            }
         }],
         "scrollZones": [{
             "id": "issue_form1",
@@ -507,7 +551,7 @@
                 "comment": "Read only field, comes from parent or when system creates the item. Problem statement below will allow Issue Owner to clarify and extend the description, describing the issue.\n",
                 "id": "5e23d9e7-ba8d-49a0-aff6-067ebfcc7c03",
                 "user": "1",
-                "updatedOn": "2019-12-03T18:47:24.337Z",
+                "updatedOn": "2019-12-09T19:11:23.518Z",
                 "file": "issue",
                 "name": "issue_info",
                 "scrollZone": "issue_form1",
@@ -524,22 +568,23 @@
                 "id": "3681cd6c-3147-491e-b021-230d190168c6",
                 "file": "issue",
                 "name": "issue_info",
-                "scrollZone": "issue_form1",
-                "type": "comment",
-                "user": "1",
-                "updatedOn": "2019-12-03T01:40:56.693Z",
-                "resolved": false
+                "scrollZone": "issue_form1"
             }, {
                 "type": "logic",
                 "x": 400,
                 "y": 850,
-                "comment": "Populated as the org of the issue owner but editable in case IO is a matrixed employee.",
+                "comment": "Read only field - users can't update. Populated to the org of the issue owner.\n",
                 "id": "ddec8402-fee2-4584-a821-0af01e778e02",
                 "file": "issue",
                 "name": "issue_info",
                 "scrollZone": "issue_form1",
-                "updatedOn": "2019-12-03T21:21:37.104Z",
-                "resolved": false
+                "user": "1",
+                "updatedOn": "2019-12-03T16:08:23.125Z",
+                "quill": {
+                    "ops": [{
+                        "insert": "Read only field - users can't update. Populated to the org of the issue owner.\n"
+                    }]
+                }
             }, {
                 "type": "notification",
                 "x": 400,
@@ -548,28 +593,38 @@
                 "id": "f128622c-7a33-4894-a235-b75b4807dc6f",
                 "file": "issue",
                 "name": "issue_info",
-                "scrollZone": "issue_form1",
-                "updatedOn": "2019-12-03T01:42:02.704Z",
-                "resolved": false
+                "scrollZone": "issue_form1"
             }, {
                 "id": "a05cbf92-e706-4926-b6ad-888fce5dbefd",
                 "type": "logic",
-                "x": 212,
-                "y": 1270,
-                "comment": "If Issue Type is Assessment Finding or Assessment Management Concern then these 2 fields are required. They would become the NPO approvers for this issue. SME would go first then COR after.",
+                "x": 398,
+                "y": 1272,
+                "comment": "If Issue Type is Assessment Finding or Assessment Management Concern they would become the NPO approvers for this issue. SME would go first then COR after in the approval flow.\n\nOR----\n\nIf anyone is added to these fields then they'll automatically be approvers on the Issue.\n",
                 "user": "1",
-                "updatedOn": "2019-11-18T20:35:41.747Z",
+                "updatedOn": "2019-12-05T20:59:52.868Z",
                 "file": "issue",
                 "name": "issue_info",
-                "scrollZone": "issue_form1"
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "If Issue Type is Assessment Finding or Assessment Management Concern they would become the NPO approvers for this issue. SME would go first then COR after in the approval flow.\n\n"
+                    }, {
+                        "attributes": {
+                            "bold": true
+                        },
+                        "insert": "OR----"
+                    }, {
+                        "insert": "\n\nIf anyone is added to these fields then they'll automatically be approvers on the Issue.\n"
+                    }]
+                }
             }, {
                 "id": "8a73e752-d5af-44de-a446-dde5b09ae66b",
                 "type": "logic",
-                "x": 411,
-                "y": 531,
+                "x": 405,
+                "y": 526,
                 "comment": "If parent is NPO object (correspondence or NPO assessment) and the Issue Type is \"Finding\" or \"Management Concern\" then NPO will be part of the Action Plan approval and the final approval of this issue.\n",
                 "user": "1",
-                "updatedOn": "2019-12-03T00:49:50.953Z",
+                "updatedOn": "2019-12-09T18:59:38.578Z",
                 "file": "issue",
                 "name": "issue_info",
                 "scrollZone": "issue_form1",
@@ -579,22 +634,27 @@
                     }]
                 }
             }, {
+                "id": "2fa65c41-f834-4621-b545-ffcf35b8b0f8",
+                "type": "deleted",
+                "x": 240,
+                "y": 1034,
+                "comment": "new test",
+                "user": "1",
+                "updatedOn": "2019-11-19T15:26:28.440Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1"
+            }, {
                 "id": "5aa2a11b-7553-46ab-9625-8aa512a7e7cf",
                 "type": "logic",
                 "x": 433,
                 "y": 48,
-                "comment": "From whatever was entered on the stub card\n",
+                "comment": "From whatever was entered on the stub card",
                 "user": "1",
-                "updatedOn": "2019-12-03T01:33:08.281Z",
+                "updatedOn": "2019-11-25T14:27:21.603Z",
                 "file": "issue",
                 "name": "issue_info",
-                "scrollZone": "issue_form1",
-                "quill": {
-                    "ops": [{
-                        "insert": "From whatever was entered on the stub card\n"
-                    }]
-                },
-                "resolved": false
+                "scrollZone": "issue_form1"
             }, {
                 "id": "469a8caf-6aaa-4c06-9a51-7541c5127a21",
                 "type": "deleted",
@@ -606,6 +666,133 @@
                 "file": "issue",
                 "name": "issue_info",
                 "scrollZone": "issue_form1"
+            }, {
+                "id": "72741b0f-3efc-40c2-8c50-7c1c5b6b6b20",
+                "type": "deleted",
+                "x": 192,
+                "y": 230,
+                "comment": "<div class=\"ql-editor\" data-gramm=\"false\" contenteditable=\"true\" data-placeholder=\"Write a comment\"><p>new test comment with a<a href=\"https://www.google.com\" target=\"_blank\"> link</a></p></div><div class=\"ql-clipboard\" contenteditable=\"true\" tabindex=\"-1\"></div><div class=\"ql-tooltip ql-editing ql-hidden hide\" data-mode=\"link\" style=\"left: 96.3819px; width: 188px; top: 33.1597px;\"><span class=\"ql-tooltip-arrow\"></span><div class=\"ql-tooltip-editor\"><input type=\"text\" data-formula=\"e=mc^2\" data-link=\"https://quilljs.com\" data-video=\"Embed URL\" placeholder=\"https://quilljs.com\"><a class=\"ql-close\"></a></div><div class=\"ql-toolbar\"><span class=\"ql-formats\"><button type=\"button\" class=\"ql-bold\"><svg viewBox=\"0 0 18 18\"> <path class=\"ql-stroke\" d=\"M5,4H9.5A2.5,2.5,0,0,1,12,6.5v0A2.5,2.5,0,0,1,9.5,9H5A0,0,0,0,1,5,9V4A0,0,0,0,1,5,4Z\"></path> <path class=\"ql-stroke\" d=\"M5,9h5.5A2.5,2.5,0,0,1,13,11.5v0A2.5,2.5,0,0,1,10.5,14H5a0,0,0,0,1,0,0V9A0,0,0,0,1,5,9Z\"></path> </svg></button><button type=\"button\" class=\"ql-italic\"><svg viewBox=\"0 0 18 18\"> <line class=\"ql-stroke\" x1=\"7\" x2=\"13\" y1=\"4\" y2=\"4\"></line> <line class=\"ql-stroke\" x1=\"5\" x2=\"11\" y1=\"14\" y2=\"14\"></line> <line class=\"ql-stroke\" x1=\"8\" x2=\"10\" y1=\"14\" y2=\"4\"></line> </svg></button><button type=\"button\" class=\"ql-underline\"><svg viewBox=\"0 0 18 18\"> <path class=\"ql-stroke\" d=\"M5,3V9a4.012,4.012,0,0,0,4,4H9a4.012,4.012,0,0,0,4-4V3\"></path> <rect class=\"ql-fill\" height=\"1\" rx=\"0.5\" ry=\"0.5\" width=\"12\" x=\"3\" y=\"15\"></rect> </svg></button></span><span class=\"ql-formats\"><button type=\"button\" class=\"ql-link\"><svg viewBox=\"0 0 18 18\"> <line class=\"ql-stroke\" x1=\"7\" x2=\"11\" y1=\"7\" y2=\"11\"></line> <path class=\"ql-even ql-stroke\" d=\"M8.9,4.577a3.476,3.476,0,0,1,.36,4.679A3.476,3.476,0,0,1,4.577,8.9C3.185,7.5,2.035,6.4,4.217,4.217S7.5,3.185,8.9,4.577Z\"></path> <path class=\"ql-even ql-stroke\" d=\"M13.423,9.1a3.476,3.476,0,0,0-4.679-.36,3.476,3.476,0,0,0,.36,4.679c1.392,1.392,2.5,2.542,4.679.36S14.815,10.5,13.423,9.1Z\"></path> </svg></button></span><span class=\"ql-formats\"><button type=\"button\" class=\"ql-clean\"><svg class=\"\" viewBox=\"0 0 18 18\"> <line class=\"ql-stroke\" x1=\"5\" x2=\"13\" y1=\"3\" y2=\"3\"></line> <line class=\"ql-stroke\" x1=\"6\" x2=\"9.35\" y1=\"12\" y2=\"3\"></line> <line class=\"ql-stroke\" x1=\"11\" x2=\"15\" y1=\"11\" y2=\"15\"></line> <line class=\"ql-stroke\" x1=\"15\" x2=\"11\" y1=\"11\" y2=\"15\"></line> <rect class=\"ql-fill\" height=\"1\" rx=\"0.5\" ry=\"0.5\" width=\"7\" x=\"2\" y=\"14\"></rect> </svg></button></span></div></div>",
+                "user": "1",
+                "updatedOn": "2019-12-02T16:41:49.042Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1"
+            }, {
+                "id": "6bf60b88-0673-4db9-901f-462d0ae180cb",
+                "type": "deleted",
+                "x": 109,
+                "y": 303,
+                "comment": "new test comment with a link",
+                "user": "1",
+                "updatedOn": "2019-12-02T18:58:27.657Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "new test comment with "
+                    }, {
+                        "attributes": {
+                            "link": "https://www.google.com"
+                        },
+                        "insert": "a link"
+                    }, {
+                        "insert": "\n"
+                    }]
+                }
+            }, {
+                "id": "407f83ab-6989-4005-89c2-be89c8fce5b1",
+                "type": "deleted",
+                "x": 208,
+                "y": 360,
+                "comment": "new test comment",
+                "user": "1",
+                "updatedOn": "2019-12-02T19:00:26.591Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "new"
+                    }, {
+                        "attributes": {
+                            "bold": true,
+                            "link": "https://www.google.com"
+                        },
+                        "insert": " tes"
+                    }, {
+                        "attributes": {
+                            "bold": true
+                        },
+                        "insert": "t comment"
+                    }, {
+                        "insert": "\n"
+                    }]
+                }
+            }, {
+                "id": "147a2587-51f3-4468-8af9-e50563852ffd",
+                "type": "deleted",
+                "x": 182,
+                "y": 274,
+                "comment": "new test comment",
+                "user": "1",
+                "updatedOn": "2019-12-03T13:48:55.709Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "new test comment\n"
+                    }]
+                },
+                "resolved": false
+            }, {
+                "id": "181dab28-c000-46bb-9428-c51a6810a00c",
+                "type": "logic",
+                "x": 404,
+                "y": 463,
+                "comment": "This field would be prepopulated from the parent\n\nThis list is still in-progress, not finalized\n\nSources:\n- Event\n- Correspondence\n- Assessment (use the type as listed on the assessment parent) - or user can select from any of the assessment types manually\n- Individual Issue",
+                "user": "1",
+                "updatedOn": "2019-12-03T15:42:43.525Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "This field would be prepopulated from the parent\n\n"
+                    }, {
+                        "attributes": {
+                            "underline": true,
+                            "bold": true
+                        },
+                        "insert": "This list is still in-progress, not finalized"
+                    }, {
+                        "insert": "\n\n"
+                    }, {
+                        "attributes": {
+                            "bold": true
+                        },
+                        "insert": "Sources:"
+                    }, {
+                        "insert": "\n- Event\n- Correspondence\n- Assessment (use the type as listed on the assessment parent) - or user can select from any of the assessment types manually\n- Individual Issue\n"
+                    }]
+                }
+            }, {
+                "id": "cd786423-29e4-4fa5-8e2e-2821e2aa773c",
+                "type": "logic",
+                "x": 312,
+                "y": 943,
+                "comment": "If parent has a Location listed this will be populated automatically, but can be changed",
+                "user": "1",
+                "updatedOn": "2019-12-03T16:08:54.654Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "If parent has a Location listed this will be populated automatically, but can be changed\n"
+                    }]
+                }
             }, {
                 "id": "65aa9eca-cac1-46e4-95aa-c36005269444",
                 "type": "deleted",
@@ -623,35 +810,83 @@
                     }]
                 }
             }, {
-                "id": "14bdfd0f-0ad3-4cd5-b741-d45ac0c898b9",
+                "id": "0a43bb03-7fd1-4160-868e-28d05b83ea9d",
                 "type": "deleted",
-                "x": 390,
-                "y": 955,
-                "comment": "Hey Jon, should we do this?",
-                "user": "1",
-                "updatedOn": "2019-12-03T21:05:12.743Z",
+                "x": 177,
+                "y": 221,
+                "comment": "test bob comment",
+                "user": "8",
+                "updatedOn": "2019-12-03T18:54:43.077Z",
                 "file": "issue",
                 "name": "issue_info",
                 "scrollZone": "issue_form1",
                 "quill": {
                     "ops": [{
-                        "insert": "Hey Jon, should we do this?\n"
+                        "insert": "test bob comment\n"
                     }]
                 }
             }, {
-                "id": "fd16de12-d0fe-42fc-9d2d-1b3703c36914",
+                "id": "a39d6afd-4e03-47ce-9697-d0303ed96a5b",
                 "type": "deleted",
-                "x": 462,
-                "y": 181,
-                "comment": "I don't agree!",
-                "user": "7",
-                "updatedOn": "2019-12-03T21:13:35.299Z",
+                "x": 370,
+                "y": 907,
+                "comment": "kjasdbjkaskdas\n",
+                "user": "1",
+                "updatedOn": "2019-12-04T14:44:16.472Z",
                 "file": "issue",
                 "name": "issue_info",
                 "scrollZone": "issue_form1",
                 "quill": {
                     "ops": [{
-                        "insert": "I don't agree!\n"
+                        "insert": "kjasdbjkaskdas\n"
+                    }]
+                }
+            }, {
+                "id": "0690216c-8480-453e-ad97-958586fc5900",
+                "type": "deleted",
+                "x": 218,
+                "y": 216,
+                "comment": "new test comment\n",
+                "user": "1",
+                "updatedOn": "2019-12-13T16:13:54.005Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "new test comment\n"
+                    }]
+                }
+            }, {
+                "id": "a33a912d-abbd-46ff-bc21-c67ffb99d67f",
+                "type": "deleted",
+                "x": 138,
+                "y": 184,
+                "comment": "new test comment\n",
+                "user": "1",
+                "updatedOn": "2019-12-13T16:14:14.551Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "new test comment\n"
+                    }]
+                }
+            }, {
+                "id": "565fd937-1f19-4658-88df-ea334c43648e",
+                "type": "deleted",
+                "x": 153,
+                "y": 180,
+                "comment": "new design note test comment\n",
+                "user": "1",
+                "updatedOn": "2019-12-13T16:14:37.925Z",
+                "file": "issue",
+                "name": "issue_info",
+                "scrollZone": "issue_form1",
+                "quill": {
+                    "ops": [{
+                        "insert": "new design note test comment\n"
                     }]
                 }
             }]
@@ -663,7 +898,7 @@
             "group": "issue"
         },
         "name": "issue_info",
-        "status": "approved"
+        "status": "inProgress"
     },
     "issue_info_ownerRequest": {
         "img": "issue/info.jpg",
@@ -776,55 +1011,98 @@
             "maxImgWidth": 450,
             "hotspots": [{
                 "type": "click",
-                "x": 338,
-                "y": 465,
+                "x": 337,
+                "y": 383,
                 "w": 138,
-                "h": 50,
+                "h": 54,
                 "link": "issue_significance",
                 "id": "1e67a629-aa1b-4547-96a3-3d743bcc4866",
                 "file": "issue",
                 "name": "issue_reporting",
                 "scrollZone": "issue_form2"
             }, {
-                "x": 340,
-                "y": 10,
+                "x": 336,
+                "y": 444,
                 "w": 138,
                 "h": 70,
                 "link": "issue_reporting_afterSubmit",
                 "id": "a0cb05a4-929b-480a-8437-205a174d96bb",
                 "file": "issue",
                 "name": "issue_reporting",
-                "scrollZone": "issue_form2"
+                "scrollZone": "issue_form2",
+                "type": "click"
             }],
             "comments": [{
                 "type": "logic",
-                "x": 20,
-                "y": 130,
-                "comment": "If parent object is an Event, populate the ORPS codes from the Event here. Issue owner can change. Only populate when Issue is first created, no need to keep in sync later.",
+                "x": 19,
+                "y": 55,
+                "comment": "If parent object is an Event, populate the ORPS codes from the Event here. Issue owner can change. Only populate when Issue is first created, no need to keep in sync later.\n",
                 "id": "3b6a65cc-34dd-4600-8cf6-ed3bfa8d933e",
                 "file": "issue",
                 "name": "issue_reporting",
-                "scrollZone": "issue_form2"
+                "scrollZone": "issue_form2",
+                "user": "2",
+                "updatedOn": "2019-12-11T17:51:54.530Z",
+                "quill": {
+                    "ops": [{
+                        "insert": "If parent object is an Event, populate the ORPS codes from the Event here. Issue owner can change. Only populate when Issue is first created, no need to keep in sync later.\n"
+                    }]
+                }
             }, {
                 "id": "6e90648d-bf4f-49ee-ab28-b7d53f253d7c",
-                "type": "question",
+                "type": "deleted",
                 "x": 310,
                 "y": 205,
-                "comment": "Are there cases when the ORPS report # would be required or when it would not be used at all?",
+                "comment": "make this an optional field. That way if it's not available or not needed then it doesn't block moving forward.\n",
                 "user": "1",
-                "updatedOn": "2019-11-25T14:33:03.936Z",
+                "updatedOn": "2019-12-11T15:09:06.293Z",
                 "file": "issue",
                 "name": "issue_reporting",
-                "scrollZone": "issue_form2"
+                "scrollZone": "issue_form2",
+                "quill": {
+                    "ops": [{
+                        "insert": "make this an optional field. That way if it's not available or not needed then it doesn't block moving forward.\n"
+                    }]
+                },
+                "resolved": true
+            }, {
+                "id": "3bdfba40-b9d6-48c8-9029-4aa48186e84b",
+                "type": "logic",
+                "x": 392,
+                "y": 55,
+                "comment": "Multiple Select options\n",
+                "user": "2",
+                "updatedOn": "2019-12-11T17:51:58.005Z",
+                "file": "issue",
+                "name": "issue_reporting",
+                "scrollZone": "issue_form2",
+                "quill": {
+                    "ops": [{
+                        "insert": "Multiple Select options\n"
+                    }]
+                }
+            }, {
+                "id": "4f40e848-811c-4238-a1d7-16a45908f51b",
+                "type": "deleted",
+                "x": 167,
+                "y": 56,
+                "comment": "Remove this yes/no toggle - make all the ORPS fields below optional, fill them out if needed.",
+                "user": "1",
+                "updatedOn": "2019-12-11T15:09:01.125Z",
+                "file": "issue",
+                "name": "issue_reporting",
+                "scrollZone": "issue_form2",
+                "quill": {
+                    "ops": [{
+                        "insert": "Remove this yes/no toggle - make all the ORPS fields below optional, fill them out if needed.\n"
+                    }]
+                },
+                "resolved": true
             }]
         }],
         "id": "293e1fa6-3fd6-49b1-830f-3c25c0b66492",
         "name": "issue_reporting",
-        "showInDrawer": false,
-        "drawerInfo": {
-            "title": "ORPS page",
-            "group": "issue"
-        }
+        "showInDrawer": false
     },
     "issue_reporting_afterSubmit": {
         "img": "issue/reporting.jpg",
@@ -866,10 +1144,10 @@
             "maxImgWidth": 450,
             "hotspots": [{
                 "type": "click",
-                "x": 338,
-                "y": 465,
+                "x": 337,
+                "y": 388,
                 "w": 138,
-                "h": 50,
+                "h": 53,
                 "link": "issue_significance",
                 "id": "1a35824a-8889-495a-aa7c-11e94434b411",
                 "file": "issue",
@@ -878,22 +1156,26 @@
             }],
             "comments": [{
                 "type": "logic",
-                "x": 400,
-                "y": 130,
+                "x": 402,
+                "y": 58,
                 "comment": "Change-request field since it could require workflow re-evaluation. Jim Taylor and Carl Diggs would be the approvers (ORPS manager role - or similar title) if this field changes - they would trigger Level Re-evaluation from the overflow menu if needed.",
                 "id": "2c6acaa8-8b1e-45b0-a56a-8f27ca652bb6",
                 "file": "issue",
                 "name": "issue_reporting_afterSubmit",
-                "scrollZone": "issue_form2"
+                "scrollZone": "issue_form2",
+                "user": "2",
+                "updatedOn": "2019-12-11T17:53:37.143Z"
             }, {
                 "type": "logic",
                 "x": 400,
-                "y": 245,
+                "y": 172,
                 "comment": "These 2 fields will need to be edited later, ORPS report and report number can be available 40+ days after this issue moves past this state.",
                 "id": "fb15d1b4-3b67-420b-9e31-38c90f419472",
                 "file": "issue",
                 "name": "issue_reporting_afterSubmit",
-                "scrollZone": "issue_form2"
+                "scrollZone": "issue_form2",
+                "user": "2",
+                "updatedOn": "2019-12-11T17:53:39.313Z"
             }]
         }],
         "id": "0347b837-f248-4730-a1e6-c193c85d3a53",
@@ -961,16 +1243,21 @@
                 "scrollZone": "issue_form3"
             }],
             "comments": [{
-                "x": 425,
+                "x": 412,
                 "y": 61,
-                "comment": "This field is on the stub-issue form when first creating a new issue. Sometimes it is optional - if no value then don't show?",
+                "comment": "This field is on the stub-issue form when first creating a new issue. It is optional - if no value then don't show this field at all\n",
                 "id": "c7b55b96-36bf-4f47-b1ba-f4d535524fb3",
                 "file": "issue",
                 "name": "issue_significance",
                 "scrollZone": "issue_form3",
-                "type": "question",
+                "type": "logic",
                 "user": "1",
-                "updatedOn": "2019-11-25T14:35:35.514Z"
+                "updatedOn": "2019-12-05T19:27:25.561Z",
+                "quill": {
+                    "ops": [{
+                        "insert": "This field is on the stub-issue form when first creating a new issue. It is optional - if no value then don't show this field at all\n"
+                    }]
+                }
             }, {
                 "id": "2d142ad1-2071-4987-8e52-78ed3a367e75",
                 "type": "logic",
@@ -983,27 +1270,37 @@
                 "name": "issue_significance",
                 "scrollZone": "issue_form3"
             }, {
-                "id": "2d142ad1-2071-4987-8e52-78ed3a367e75",
-                "type": "logic",
-                "x": 333,
-                "y": 271,
-                "comment": "See document about workflow determination for information about how this form will affect the workflow moving forward {{ insert git link here }}",
+                "id": "4dfaede5-b113-423a-962e-f0058b051f80",
+                "type": "deleted",
+                "x": 16,
+                "y": 163,
+                "comment": "Currently the Event Issues Stub card only has A,B,C,D,E as SL choices.  We need to update to make it a taxonomy.  Just like this one.",
                 "user": "1",
-                "updatedOn": "2019-11-25T14:38:09.281Z",
+                "updatedOn": "2019-12-05T19:30:28.309Z",
                 "file": "issue",
                 "name": "issue_significance",
-                "scrollZone": "issue_form3"
+                "scrollZone": "issue_form3",
+                "quill": {
+                    "ops": [{
+                        "insert": "Currently the Event Issues Stub card only has A,B,C,D,E as SL choices.  We need to update to make it a taxonomy.  Just like this one.\n"
+                    }]
+                }
             }, {
-                "id": "2d142ad1-2071-4987-8e52-78ed3a367e75",
-                "type": "logic",
-                "x": 333,
-                "y": 271,
-                "comment": "See document about workflow determination for information about how this form will affect the workflow moving forward {{ insert git link here }}",
-                "user": "1",
-                "updatedOn": "2019-11-25T14:39:00.908Z",
+                "id": "4dfaede5-b113-423a-962e-f0058b051f80",
+                "type": "comment",
+                "x": 33,
+                "y": 131,
+                "comment": "Currently the Event Issues Stub card only has A,B,C,D,E as SL choices.  We need to update to make it a taxonomy.  Just like this one.",
+                "user": "7",
+                "updatedOn": "2019-12-04T20:44:12.387Z",
                 "file": "issue",
                 "name": "issue_significance",
-                "scrollZone": "issue_form3"
+                "scrollZone": "issue_form3",
+                "quill": {
+                    "ops": [{
+                        "insert": "Currently the Event Issues Stub card only has A,B,C,D,E as SL choices.  We need to update to make it a taxonomy.  Just like this one.\n"
+                    }]
+                }
             }]
         }],
         "id": "2b989f08-3d6f-4200-8b56-995fc0e37587",
@@ -1203,11 +1500,18 @@
                 "type": "notification",
                 "x": 380,
                 "y": 220,
-                "comment": "Create to-do to perform review for all IMB admins.<br/>Create to-do for all EC group members to perform determination.<br/>No email notifications needed to either team.",
+                "comment": "Create to-do to perform review for all IMB admins.\nCreate to-do for all EC group members to perform determination.\nNo email notifications needed to either team - UNLESS on the info form the IMB requested due date field is filled out, then send an email to the IMB group to let them know this issue is requesting a rush review.\n",
                 "id": "dae8529a-b0a0-44cd-8cac-282385303d9f",
                 "file": "issue",
                 "name": "issue_submitIMB",
-                "scrollZone": "issue_form4"
+                "scrollZone": "issue_form4",
+                "user": "1",
+                "updatedOn": "2019-12-04T14:43:08.701Z",
+                "quill": {
+                    "ops": [{
+                        "insert": "Create to-do to perform review for all IMB admins.\nCreate to-do for all EC group members to perform determination.\nNo email notifications needed to either team - UNLESS on the info form the IMB requested due date field is filled out, then send an email to the IMB group to let them know this issue is requesting a rush review.\n"
+                    }]
+                }
             }]
         }],
         "id": "d2cbd23c-6942-4b3b-b16d-f1828d022413",
@@ -1258,6 +1562,39 @@
                 "file": "issue",
                 "name": "issue_level_IMB_nonIMBPerson",
                 "scrollZone": "issue_form5_nonIMB"
+            }],
+            "comments": [{
+                "id": "54ee8754-5466-448c-adcd-616fce285509",
+                "type": "logic",
+                "x": 212,
+                "y": 13,
+                "comment": "This is the read only form that most users that have access to issues will see.  If IMB admin, they will have fields to fill out. \n",
+                "user": "2",
+                "updatedOn": "2019-12-11T19:07:10.672Z",
+                "file": "issue",
+                "name": "issue_level_IMB_nonIMBPerson",
+                "scrollZone": "issue_form5_nonIMB",
+                "quill": {
+                    "ops": [{
+                        "insert": "This is the read only form that most users that have access to issues will see.  If IMB admin, they will have fields to fill out. \n"
+                    }]
+                }
+            }, {
+                "id": "3f1e9f69-54a7-4594-84ac-3ee19970f12b",
+                "type": "question",
+                "x": 127,
+                "y": 583,
+                "comment": "Need to figure out how to show this sub-form in a read only state.  It is not editable on this page.  Only IMB can edit this sub-form (shown by clicking on the hot-spot). \n\nHow do we update and show as read only?",
+                "user": "7",
+                "updatedOn": "2019-12-04T21:04:53.925Z",
+                "file": "issue",
+                "name": "issue_level_IMB_nonIMBPerson",
+                "scrollZone": "issue_form5_nonIMB",
+                "quill": {
+                    "ops": [{
+                        "insert": "Need to figure out how to show this sub-form in a read only state.  It is not editable on this page.  Only IMB can edit this sub-form (shown by clicking on the hot-spot). \n\nHow do we update and show as read only?\n"
+                    }]
+                }
             }]
         }],
         "id": "9b60ebdd-6042-4261-946b-86c486293bea",
@@ -1359,6 +1696,54 @@
                 "file": "issue",
                 "name": "issue_level_IMB",
                 "scrollZone": ""
+            }, {
+                "id": "23eb8ba1-9815-4172-a96d-cb4278dac0fd",
+                "type": "logic",
+                "x": 220,
+                "y": 34,
+                "comment": "Only the IMB admin group members can edit this form.",
+                "user": "1",
+                "updatedOn": "2019-12-05T19:45:43.520Z",
+                "file": "issue",
+                "name": "issue_level_IMB",
+                "scrollZone": "",
+                "quill": {
+                    "ops": [{
+                        "insert": "Only the IMB admin group members can edit this form. \n"
+                    }]
+                }
+            }, {
+                "id": "5ab42273-5c03-490f-9208-dba1174cacf7",
+                "type": "logic",
+                "x": 438,
+                "y": 379,
+                "comment": "If Issue had a SL when created then the Issue Owner enter a SL only show the SL the IO entered. \nIf the Issue has a SL when created and the Issue Owner did not enter a SL then show the original SL\nIf none then show empty.",
+                "user": "1",
+                "updatedOn": "2019-12-05T19:50:11.451Z",
+                "file": "issue",
+                "name": "issue_level_IMB",
+                "scrollZone": "",
+                "quill": {
+                    "ops": [{
+                        "insert": "If Issue had a SL when created then the Issue Owner enter a SL only show the SL the IO entered. \nIf the Issue has a SL when created and the Issue Owner did not enter a SL then show the original SL\nIf none then show empty.\n"
+                    }]
+                }
+            }, {
+                "id": "28b09389-497d-4943-8179-46b49fc39b0e",
+                "type": "question",
+                "x": 246,
+                "y": 248,
+                "comment": "Need to define how this will work if there is an open Issue Owner change request when the IMB gets this form.",
+                "user": "1",
+                "updatedOn": "2019-12-05T19:50:47.545Z",
+                "file": "issue",
+                "name": "issue_level_IMB",
+                "scrollZone": "",
+                "quill": {
+                    "ops": [{
+                        "insert": "Need to define how this will work if there is an open Issue Owner change request when the IMB gets this form.\n"
+                    }]
+                }
             }]
         }],
         "id": "2c02575c-8e96-4488-bfb4-d68e66b5a006",
@@ -1433,7 +1818,23 @@
             "title": "Level Determination - EC Form",
             "group": "issue"
         },
-        "name": "issue_level_EC"
+        "name": "issue_level_EC",
+        "comments": [{
+            "id": "4bdd2d7b-9cd6-457e-82cb-3890b93bff29",
+            "type": "comment",
+            "x": 379,
+            "y": 309,
+            "comment": "Duel workflow on these forms.  Both IMB and EC can come in and submit.  Not sure how to work out the state flow.  Both IMB and EC together determine the future workflow.",
+            "user": "7",
+            "updatedOn": "2019-12-04T22:58:57.153Z",
+            "file": "issue",
+            "name": "issue_level_EC",
+            "quill": {
+                "ops": [{
+                    "insert": "Duel workflow on these forms.  Both IMB and EC can come in and submit.  Not sure how to work out the state flow.  Both IMB and EC together determine the future workflow. \n"
+                }]
+            }
+        }]
     },
     "issue_level_EC_yes": {
         "img": "issue/level_EC.jpg",
@@ -1506,12 +1907,17 @@
                 "type": "logic",
                 "x": 406,
                 "y": 145,
-                "comment": "default to the current user, but they can edit to pick anyone in EC (people picker would be EC Group only)",
+                "comment": "people picker would be EC Group only\n",
                 "user": "1",
-                "updatedOn": "2019-11-25T14:48:51.298Z",
+                "updatedOn": "2019-12-05T20:02:30.447Z",
                 "file": "issue",
                 "name": "issue_level_EC_yes",
-                "scrollZone": "EC_levelForms"
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "people picker would be EC Group only\n"
+                    }]
+                }
             }, {
                 "id": "ba62826f-bb99-4118-a87a-4e9279e40247",
                 "type": "logic",
@@ -1523,6 +1929,40 @@
                 "file": "issue",
                 "name": "issue_level_EC_yes",
                 "scrollZone": "EC_levelForms"
+            }, {
+                "id": "09bd156b-97ce-4180-adba-6f81453cef5b",
+                "type": "comment",
+                "x": 28,
+                "y": 199,
+                "comment": "The person selected here will only be doing the screening, they will NOT be the EC approver.\n",
+                "user": "1",
+                "updatedOn": "2019-12-11T18:38:43.527Z",
+                "file": "issue",
+                "name": "issue_level_EC_yes",
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "The person selected here will only be doing the screening, they will NOT be the EC approver.\n"
+                    }]
+                },
+                "resolved": true
+            }, {
+                "id": "53ee8b36-b274-46e8-b131-a44e4cf04cd0",
+                "type": "comment",
+                "x": 341,
+                "y": 205,
+                "comment": "Take out the word Comprehensive.  It's simply the Action Plan.\nAlso this note is wrong, the Approvers of the AP, EOC etc are the people defined on the EC Reporting form.\n",
+                "user": "1",
+                "updatedOn": "2019-12-11T18:38:45.935Z",
+                "file": "issue",
+                "name": "issue_level_EC_yes",
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "Take out the word Comprehensive.  It's simply the Action Plan.\nAlso this note is wrong, the Approvers of the AP, EOC etc are the people defined on the EC Reporting form.\n"
+                    }]
+                },
+                "resolved": true
             }]
         }],
         "id": "be40d06e-0823-488c-a382-79ceac42e1e1",
@@ -1596,15 +2036,15 @@
             }],
             "comments": [{
                 "type": "logic",
-                "x": 348,
-                "y": 385,
+                "x": 357,
+                "y": 364,
                 "comment": "If outcome of this form is NO -  then EC will not be present in the issue in any form moving forward. Not in approvals, not in level workflow etc.",
                 "id": "1421919c-a858-4f1c-9cc2-18bf13c1e45b",
                 "file": "issue",
                 "name": "issue_level_EC_no",
                 "scrollZone": "EC_levelForms",
                 "user": "1",
-                "updatedOn": "2019-11-25T14:48:05.065Z"
+                "updatedOn": "2019-12-05T20:00:42.229Z"
             }]
         }],
         "id": "bdd24ec6-9bb2-4ef5-bd49-d63e504b0764",
@@ -1686,19 +2126,73 @@
                 "scrollZone": "EC_levelForms"
             }, {
                 "id": "70bfe406-d415-4851-9255-002154fe363a",
-                "type": "question",
+                "type": "logic",
                 "x": 459,
                 "y": 999,
-                "comment": "If NOT reportable, does EC still need to do the Workflow step (#4)?",
+                "comment": "If NOT reportable, Skip the Workflow step completely for EC - go straight to Concur step.\n",
                 "user": "1",
-                "updatedOn": "2019-11-25T14:52:14.657Z",
+                "updatedOn": "2019-12-05T20:23:24.130Z",
                 "file": "issue",
                 "name": "issue_level_EC_screening",
-                "scrollZone": "EC_levelForms"
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "If NOT reportable, Skip the Workflow step completely for EC - go straight to Concur step.\n"
+                    }]
+                }
+            }, {
+                "id": "b6c0ac03-7092-4b8b-8a72-8a028ab64a7e",
+                "type": "comment",
+                "x": 384,
+                "y": 1137,
+                "comment": "Make this a blue button, Screener To-Do is complete",
+                "user": "1",
+                "updatedOn": "2019-12-11T18:45:10.820Z",
+                "file": "issue",
+                "name": "issue_level_EC_screening",
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "Make this a blue button, Screener To-Do is complete\n"
+                    }]
+                },
+                "resolved": true
+            }, {
+                "id": "3b92ad67-bd06-49cd-9b81-ae005ba4498a",
+                "type": "comment",
+                "x": 214,
+                "y": 17,
+                "comment": "If EC Concurrer does not concur then this form should be versioned and resubmitted.\n\nHow does the Screener know what they should change? Where do we display the comments the Concurrer left?",
+                "user": "1",
+                "updatedOn": "2019-12-05T20:28:41.759Z",
+                "file": "issue",
+                "name": "issue_level_EC_screening",
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "If EC Concurrer does not concur then this form should be versioned and resubmitted.\n\nHow does the Screener know what they should change? Where do we display the comments the Concurrer left?\n"
+                    }]
+                }
             }]
         }],
         "id": "be86f59e-c63e-4f0a-8976-6367741e3bf8",
-        "name": "issue_level_EC_screening"
+        "name": "issue_level_EC_screening",
+        "comments": [{
+            "id": "44ef3424-f968-4003-9d7b-b32e5e68d456",
+            "type": "comment",
+            "x": 516,
+            "y": 486,
+            "comment": "Move EC concurrence up to after Screening",
+            "user": "1",
+            "updatedOn": "2019-12-05T20:25:32.713Z",
+            "file": "issue",
+            "name": "issue_level_EC_screening",
+            "quill": {
+                "ops": [{
+                    "insert": "Move EC concurrence up to after Screening\n"
+                }]
+            }
+        }]
     },
     "issue_level_EC_screening_filled": {
         "img": "issue/level_EC_screening.jpg",
@@ -1745,18 +2239,19 @@
             "img": "issue/_forms/EC_screening_filled.jpg",
             "maxImgWidth": 450,
             "hotspots": [{
-                "x": 340,
+                "x": 237,
                 "y": 1288,
-                "w": 135,
+                "w": 238,
                 "h": 38,
                 "link": "issue_level_workflow_EC",
                 "id": "2ee67d1e-1fb1-41da-bcb6-f589f99bd4dd",
                 "file": "issue",
                 "name": "issue_level_EC_screening_filled",
-                "scrollZone": "EC_levelForms"
+                "scrollZone": "EC_levelForms",
+                "type": "click"
             }],
             "comments": [{
-                "type": "logic",
+                "type": "deleted",
                 "x": 420,
                 "y": 670,
                 "comment": "These checkboxes will automatically be selected based on the citations selected above. These are similar to tags to allow searching for issues where citations are in a certain category.",
@@ -1775,7 +2270,7 @@
                 "scrollZone": "EC_levelForms"
             }, {
                 "id": "cd41221f-3d98-4bfd-aa0b-17e5afb65967",
-                "type": "question",
+                "type": "deleted",
                 "x": 284,
                 "y": 686,
                 "comment": "Can we manually do this selection for MVP?",
@@ -1784,6 +2279,38 @@
                 "file": "issue",
                 "name": "issue_level_EC_screening_filled",
                 "scrollZone": "EC_levelForms"
+            }, {
+                "id": "58b7a1bf-e331-419e-93cb-e1adaff7ed8b",
+                "type": "comment",
+                "x": 128,
+                "y": 311,
+                "comment": "We will provide a list of citations and attach them to the requirement.",
+                "user": "7",
+                "updatedOn": "2019-12-05T13:22:51.124Z",
+                "file": "issue",
+                "name": "issue_level_EC_screening_filled",
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "We will provide a list of citations and attach them to the requirement.\n"
+                    }]
+                }
+            }, {
+                "id": "ff16f27b-fdc1-4f2a-a7ef-20647a9536ee",
+                "type": "logic",
+                "x": 376,
+                "y": 1086,
+                "comment": "Add EC flag to this issue if \"Reportable\" is selected only. Do this after EC Concurs (step 5)",
+                "user": "1",
+                "updatedOn": "2019-12-05T20:19:21.714Z",
+                "file": "issue",
+                "name": "issue_level_EC_screening_filled",
+                "scrollZone": "EC_levelForms",
+                "quill": {
+                    "ops": [{
+                        "insert": "Add EC flag to this issue if \"Reportable\" is selected only. Do this after EC Concurs (step 5)\n"
+                    }]
+                }
             }]
         }],
         "id": "ee24728c-e0ab-4cfb-8b07-3f637e31e707",
@@ -1956,13 +2483,11 @@
                 "type": "logic",
                 "x": 90,
                 "y": 735,
-                "comment": "If EC decided NOT to screen this value should say something like \"EC Waived Review\"",
+                "comment": "If EC decided not to screen this value should say something like \"EC Waived Review\"",
                 "id": "c9e9c4e6-3b70-4936-9f77-4b55d0d41b4e",
                 "file": "issue",
                 "name": "issue_level_workflow_IMB",
-                "scrollZone": "issue_form4",
-                "user": "1",
-                "updatedOn": "2019-11-25T14:45:48.899Z"
+                "scrollZone": "issue_form4"
             }, {
                 "type": "logic",
                 "x": 400,
@@ -1972,6 +2497,70 @@
                 "file": "issue",
                 "name": "issue_level_workflow_IMB",
                 "scrollZone": "issue_form4"
+            }, {
+                "id": "e71187eb-cbac-4bff-bee0-af8ea53f5a5e",
+                "type": "logic",
+                "x": 299,
+                "y": 301,
+                "comment": "Logic for this page:  We take the choices of the EC, IMB and Issue Owner.  If any Yes, it's required. If all agree NO, it's not populated in future workflow.\n",
+                "user": "2",
+                "updatedOn": "2019-12-11T19:09:34.305Z",
+                "file": "issue",
+                "name": "issue_level_workflow_IMB",
+                "scrollZone": "issue_form4",
+                "quill": {
+                    "ops": [{
+                        "insert": "Logic for this page:  We take the choices of the EC, IMB and Issue Owner.  If any Yes, it's required. If all agree NO, it's not populated in future workflow.\n"
+                    }]
+                }
+            }, {
+                "id": "e71187eb-cbac-4bff-bee0-af8ea53f5a5e",
+                "type": "comment",
+                "x": 299,
+                "y": 301,
+                "comment": "Logic for this page:  We take the choices of the EC, IMB and Issue Owner.  If any Yes, it's required. If all agree NO, it's not populated in future workflow.",
+                "user": "7",
+                "updatedOn": "2019-12-05T17:19:33.212Z",
+                "file": "issue",
+                "name": "issue_level_workflow_IMB",
+                "scrollZone": "issue_form4",
+                "quill": {
+                    "ops": [{
+                        "insert": "Logic for this page:  We take the choices of the EC, IMB and Issue Owner.  If any Yes, it's required. If all agree NO, it's not populated in future workflow.\n"
+                    }]
+                }
+            }, {
+                "id": "c04610f5-3197-4184-b96c-e70d81ddaa46",
+                "type": "logic",
+                "x": 260,
+                "y": 321,
+                "comment": "This is where everyone will see who chose what future workflow.  Logic is we take the answers from the IMB, EC and Issue Owner.  If any Yes, then the workflow is required.  If all agree NO, then the workflow does not get populated.  This workflow is displayed in the Result field.",
+                "user": "7",
+                "updatedOn": "2019-12-05T17:25:33.150Z",
+                "file": "issue",
+                "name": "issue_level_workflow_IMB",
+                "scrollZone": "issue_form4",
+                "quill": {
+                    "ops": [{
+                        "insert": "This is where everyone will see who chose what future workflow.  Logic is we take the answers from the IMB, EC and Issue Owner.  If any Yes, then the workflow is required.  If all agree NO, then the workflow does not get populated.  This workflow is displayed in the Result field. \n"
+                    }]
+                }
+            }, {
+                "id": "e8d7d3ed-1b2a-4924-bce8-69e0a077b422",
+                "type": "comment",
+                "x": 234,
+                "y": 397,
+                "comment": "Show the result field as \"--\" until a defintive result it know\n",
+                "user": "1",
+                "updatedOn": "2019-12-05T19:58:35.859Z",
+                "file": "issue",
+                "name": "issue_level_workflow_IMB",
+                "scrollZone": "issue_form4",
+                "quill": {
+                    "ops": [{
+                        "insert": "Show the result field as \"--\" until a defintive result it know\n"
+                    }]
+                }
             }]
         }],
         "id": "3d3f433e-2492-4989-8dc5-926aa64db323",
@@ -2272,13 +2861,11 @@
                 "type": "logic",
                 "x": 160,
                 "y": 212,
-                "comment": "EC decisions would be automatically selected based on determination from EC Screening form. EC user could change the default as needed. We don't have the logic for this yet....",
+                "comment": "EC decisions would be automatically selected based on determination from EC Screening form. EC user could change the default as needed.",
                 "id": "9cf00736-5ad7-4191-872b-271815b31065",
                 "file": "issue",
                 "name": "issue_level_workflow_EC",
-                "scrollZone": "issue_form4",
-                "user": "1",
-                "updatedOn": "2019-11-25T14:56:22.720Z"
+                "scrollZone": "issue_form4"
             }, {
                 "id": "e89c26bc-bb03-4c8a-8f45-0de7a9f0927d",
                 "type": "question",
@@ -2875,6 +3462,39 @@
                 "file": "issue",
                 "name": "issue_level_EC_reporting",
                 "scrollZone": "issue_form4"
+            }],
+            "comments": [{
+                "id": "6491d948-1e84-431b-a819-0c7f325c3678",
+                "type": "logic",
+                "x": 156,
+                "y": 462,
+                "comment": "This will be the screener from step #2 - remove this field. We'll use the screener as the reviewer",
+                "user": "1",
+                "updatedOn": "2019-12-05T20:12:00.371Z",
+                "file": "issue",
+                "name": "issue_level_EC_reporting",
+                "scrollZone": "issue_form4",
+                "quill": {
+                    "ops": [{
+                        "insert": "This will be the screener from step #2 - remove this field. We'll use the screener as the reviewer\n"
+                    }]
+                }
+            }, {
+                "id": "6491d948-1e84-431b-a819-0c7f325c3678",
+                "type": "logic",
+                "x": 156,
+                "y": 462,
+                "comment": "This will be the screener from step #2 - remove this field. We'll use the screener as the reviewer",
+                "user": "1",
+                "updatedOn": "2019-12-05T20:12:04.962Z",
+                "file": "issue",
+                "name": "issue_level_EC_reporting",
+                "scrollZone": "issue_form4",
+                "quill": {
+                    "ops": [{
+                        "insert": "This will be the screener from step #2 - remove this field. We'll use the screener as the reviewer\n"
+                    }]
+                }
             }]
         }, {
             "x": 351,
@@ -3332,7 +3952,68 @@
             "title": "Workflow - nothing required",
             "group": "issue"
         },
-        "name": "issue_level_EC_reporting_optional"
+        "name": "issue_level_EC_reporting_optional",
+        "comments": [{
+            "id": "1510bcbb-bfee-447d-a921-07c1648588f0",
+            "type": "comment",
+            "x": 331,
+            "y": 621,
+            "comment": "Still need an action plan chevron here.",
+            "user": "1",
+            "updatedOn": "2019-12-05T20:38:05.129Z",
+            "file": "issue",
+            "name": "issue_level_EC_reporting_optional",
+            "quill": {
+                "ops": [{
+                    "insert": "Still need an action plan chevron here.\n"
+                }]
+            }
+        }, {
+            "id": "52f7fae7-aa6d-4014-9e0c-8665e634061c",
+            "type": "deleted",
+            "x": 337,
+            "y": 576,
+            "comment": "Make this chevron optional",
+            "user": "1",
+            "updatedOn": "2019-12-05T20:41:49.161Z",
+            "file": "issue",
+            "name": "issue_level_EC_reporting_optional",
+            "quill": {
+                "ops": [{
+                    "insert": "Make this chevron optional\n"
+                }]
+            }
+        }, {
+            "id": "c42a4cab-ac5b-4c63-abd7-3953cc609965",
+            "type": "comment",
+            "x": 322,
+            "y": 573,
+            "comment": "Remove the cause codes chevron completely.",
+            "user": "1",
+            "updatedOn": "2019-12-05T20:46:03.462Z",
+            "file": "issue",
+            "name": "issue_level_EC_reporting_optional",
+            "quill": {
+                "ops": [{
+                    "insert": "Remove the cause codes chevron completely.\n"
+                }]
+            }
+        }, {
+            "id": "c42a4cab-ac5b-4c63-abd7-3953cc609965",
+            "type": "comment",
+            "x": 324,
+            "y": 569,
+            "comment": "Remove the cause codes chevron completely.",
+            "user": "1",
+            "updatedOn": "2019-12-05T20:45:29.621Z",
+            "file": "issue",
+            "name": "issue_level_EC_reporting_optional",
+            "quill": {
+                "ops": [{
+                    "insert": "Remove the cause codes chevron completely.\n"
+                }]
+            }
+        }]
     },
     "issue_level_EC_reporting_CA_middleState": {
         "img": "issue/level_EC_reporting.jpg",
@@ -4307,11 +4988,18 @@
                 "type": "notification",
                 "x": 380,
                 "y": 104,
-                "comment": "Send notification to Team Leader so they are aware.",
+                "comment": "On submit - Send notification to Team Leader so they are aware.\n",
                 "id": "c7ea8280-493b-44d5-919a-a3fab5c1571f",
                 "file": "issue",
                 "name": "issues_causalAnalysis_prepare_SWAT",
-                "scrollZone": "issue_form7"
+                "scrollZone": "issue_form7",
+                "user": "1",
+                "updatedOn": "2019-12-04T14:53:01.573Z",
+                "quill": {
+                    "ops": [{
+                        "insert": "On submit - Send notification to Team Leader so they are aware.\n"
+                    }]
+                }
             }, {
                 "type": "logic",
                 "x": 380,
@@ -4604,13 +5292,11 @@
                 "type": "logic",
                 "x": 380,
                 "y": 235,
-                "comment": "Team Leader fills out this form and the results form together.",
+                "comment": "SWAT Team Leader fills out this form and the results form together.",
                 "id": "739be699-40c6-49db-990c-22aaa2c4c5e6",
                 "file": "issue",
                 "name": "issues_causalAnalysis_SWAT_team",
-                "scrollZone": "issue_form7",
-                "user": "1",
-                "updatedOn": "2019-11-25T15:11:47.267Z"
+                "scrollZone": "issue_form7"
             }]
         }],
         "id": "ca70d7f9-3909-4b5d-b773-31a8acb042b6",
@@ -4711,13 +5397,11 @@
                 "type": "logic",
                 "x": 410,
                 "y": 810,
-                "comment": "QCAS / Team Leader fills out this form",
+                "comment": "QCAS / SWAT Team Leader fills out this form",
                 "id": "50b1461f-59c4-4a5f-b6f3-ae718cc3fe01",
                 "file": "issue",
                 "name": "issues_causalAnalysis_results",
-                "scrollZone": "issue_form7",
-                "user": "1",
-                "updatedOn": "2019-11-25T15:13:22.619Z"
+                "scrollZone": "issue_form7"
             }, {
                 "x": 450,
                 "y": 810,
@@ -4725,8 +5409,7 @@
                 "id": "b2f1fbf6-78e8-43e1-a20b-fcff1095cb7e",
                 "file": "issue",
                 "name": "issues_causalAnalysis_results",
-                "scrollZone": "issue_form7",
-                "type": "deleted"
+                "scrollZone": "issue_form7"
             }]
         }],
         "id": "db5e0475-d428-4a0d-a8c3-0bcba095d5f1",
@@ -5611,15 +6294,13 @@
                 "scrollZone": "issue_form9"
             }, {
                 "type": "logic",
-                "x": 411,
-                "y": 186,
+                "x": 410,
+                "y": 185,
                 "comment": "Issue owners view of this form would be all read only. they cannot take any action. The To-Do would be assigned to the Issue Owner's Senior Director - need to figure out how to determine this person",
                 "id": "3accc3e4-637b-4ae6-bd06-c58f63fa20d5",
                 "file": "issue",
                 "name": "issues_extentOfCondition_EOC_owner",
-                "scrollZone": "issue_form9",
-                "user": "1",
-                "updatedOn": "2019-11-25T15:19:11.788Z"
+                "scrollZone": "issue_form9"
             }]
         }],
         "id": "cd624379-cfed-4a0a-a4c3-1e8a9d0702f4",
@@ -5733,11 +6414,11 @@
             }, {
                 "id": "268f6ab8-7ffb-44f5-8fdd-1d59ca250226",
                 "type": "logic",
-                "x": 431,
+                "x": 430,
                 "y": 258,
                 "comment": "To-Do is assigned to the EOC owner to fill out the next form",
                 "user": "1",
-                "updatedOn": "2019-11-25T15:20:37.884Z",
+                "updatedOn": "2019-12-10T20:57:55.338Z",
                 "file": "issue",
                 "name": "issues_extentOfCondition_EOC_owner_yes",
                 "scrollZone": "issue_form9"
@@ -9967,14 +10648,21 @@
                 "scrollZone": "issue_form9"
             }],
             "comments": [{
-                "type": "logic",
+                "type": "comment",
                 "x": 350,
                 "y": 760,
-                "comment": "EC person is filling out this form, this is their last step in the Issue process. Don't navigate from this screen after pushing this button.",
+                "comment": "EC person is filling out this form, this is their last step in the Issue process.\n",
                 "id": "492a8966-2af9-49a3-a345-2786af1f25af",
                 "file": "issue",
                 "name": "issues_effectiveness_ECReview",
-                "scrollZone": "issue_form9"
+                "scrollZone": "issue_form9",
+                "user": "1",
+                "updatedOn": "2019-12-04T13:36:37.515Z",
+                "quill": {
+                    "ops": [{
+                        "insert": "EC person is filling out this form, this is their last step in the Issue process.\n"
+                    }]
+                }
             }]
         }, {
             "id": "workflow",
@@ -10300,7 +10988,8 @@
             "link": "issue_summary",
             "id": "c7e20bde-9b9a-4df4-849e-634970216aae",
             "file": "issue",
-            "name": "issue_summary_print"
+            "name": "issue_summary_print",
+            "state": "deleted"
         }, {
             "type": "global",
             "name": "issue_closeCard"

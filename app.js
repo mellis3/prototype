@@ -341,7 +341,10 @@ function mergeFiles( existingFile, pathToNewFile, callback ){
                                     }
 
                                     //else
-                                    //old comment exists so don't do anything
+                                    //old comment exists so update type and position but don't update text
+                                    oldComment.x = c.x;
+                                    oldComment.y = c.y;
+                                    oldComment.type = c.type;
                                 }
                             }
 
@@ -457,6 +460,11 @@ function mergeFiles( existingFile, pathToNewFile, callback ){
                                                             console.log( 'merging in a new comment', c );
                                                             oldScrollZone.comments.push( c );
                                                         }
+
+                                                        //old comment exists so update type and position but don't update text
+                                                        oldComment.x = c.x;
+                                                        oldComment.y = c.y;
+                                                        oldComment.type = c.type;
                                                     }
                                                 }
 
