@@ -2538,7 +2538,10 @@
                     const hotspot = _self.dataPieces.global[ g ];
                     globalHotspots = globalHotspots + `
                         <div id="${ hotspot.name }" class="globalHotspotList-item">
-                            ${ hotspot.name }
+                            <div class="globalHotspotList-item-overview">
+                                <span class="globalHotspotList-item-name">${ hotspot.name }</span>
+                                <span class="globalHotspotList-item-link">Link to: ${ hotspot.link }</span>
+                            </div>
                             <button
                                 class="hotspotDetails button button--icon destructive"
                             >
@@ -4677,6 +4680,8 @@
             data = _self.find( nodeParent.getAttribute( 'id' ), context );
             file = data.file;
             name = data.name;
+
+            console.log( data );
 
             //find the scrollzone data
             data = data.scrollZones.find( ( s ) => {
