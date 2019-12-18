@@ -232,8 +232,13 @@
             }
         }
 
-        const newItemData = _self.find(nextItem, contextName);
+        //close any open comment modals
+        _self.removeActiveComments();
 
+        //find the data for the new slide
+        const newItemData = _self.find( nextItem, contextName );
+
+        //determine what to do next. Show the item if it's already in the DOM or add a new DOM node if not.
         //if item already exists then show it
         if (context.querySelectorAll(`#${ nextItem }`).length > 0) {
             context.querySelector(`#${ nextItem }`).classList.add('active');
@@ -1430,6 +1435,9 @@
             }
             commentNode.setAttribute( 'data-type', c.type );
             commentNode.setAttribute( 'data-commentNum', iteration );
+            if( typeof c.resolved !== 'undefined' ){
+                commentNode.setAttribute( 'data-resolved', c.resolved );
+            }
             iteration++;
 
             //if this comment is using quill then display the formatted data
@@ -3992,6 +4000,28 @@
     }
 
 
+    /*
+        Trigger audit of a file
+    */
+    this.audit = function( file ){
+
+        //hit the API
+        _self.post(
+            'audit',
+            { 
+                file: file
+            },
+            function( data ){
+                if( data.status === 'error' ){
+                    _self.toast( data.error, 'error' );
+                }else{
+                    _self.toast( 'audit completed', 'success' );
+                }
+            }
+        );
+    }
+
+
 
     /*
         Fetching Data
@@ -4202,6 +4232,64 @@
 
         //add a slide for this
         _self.createSlide( comments, `all_${ file }_comments`, 'allComments' );
+    }
+
+    /*
+        Annotation / Comment Mode
+    */
+    this.setupCommentMode = function( mode, node ){
+
+        //add the close button
+        if( document.querySelectorAll( '.exitMode' ).length < 1 ){
+            const closeX = document.createElement('div');
+            closeX.className = `exitMode`;
+            closeX.innerHTML = `
+                <span class="closeX">+</span>
+            `;
+            document.querySelector( 'body' ).appendChild( closeX );
+
+            //on click cancel
+            closeX.onclick = function(){
+                _self.removeCommentMode( mode, node );
+            }
+        }
+
+        _self[ mode ] = true;
+        _self.modeControls.querySelector( node ).classList.add( 'active' );
+        
+        //disable hotspots through CSS so click events aren't triggered.
+        document.body.setAttribute( 'data-disabledHotspots', true );
+        document.body.classList.add( mode );
+
+        //update the cursor
+        document.body.style.cursor = 'cell';
+
+    }
+    this.removeCommentMode = function( mode, node ){
+        _self[ mode ] = false;
+        _self.modeControls.querySelector( node ).classList.remove( 'active' );
+        document.body.setAttribute( 'data-disabledHotspots', false );
+        document.body.classList.remove( mode );
+        document.body.style.cursor = 'default';
+
+        setTimeout( function(){
+            document.querySelector( '.exitMode' ).remove();
+        }, 300 );
+    }
+    this.commentModeComplete = function(){
+        document.body.setAttribute( 'data-disabledHotspots', false );
+        document.body.classList.remove( 'addingAnnotation' );
+        document.body.classList.remove( 'addingComment' );
+        document.body.classList.remove( 'addingHotspot' );
+        document.body.classList.remove( 'addingGlobalHotspot' );
+        document.body.style.cursor = 'default';
+    }
+
+    this.removeActiveComments = function(){
+        let openComments = _self.wrap.querySelectorAll( '.comment.active' );
+        for( let c of openComments ){
+            c.remove();
+        }
     }
 
     /*
@@ -4532,56 +4620,6 @@
     }
 
 
-    /*
-        Annotation / Comment Mode
-    */
-    this.setupCommentMode = function( mode, node ){
-
-        //add the close button
-        if( document.querySelectorAll( '.exitMode' ).length < 1 ){
-            const closeX = document.createElement('div');
-            closeX.className = `exitMode`;
-            closeX.innerHTML = `
-                <span class="closeX">+</span>
-            `;
-            document.querySelector( 'body' ).appendChild( closeX );
-
-            //on click cancel
-            closeX.onclick = function(){
-                _self.removeCommentMode( mode, node );
-            }
-        }
-
-        _self[ mode ] = true;
-        _self.modeControls.querySelector( node ).classList.add( 'active' );
-        
-        //disable hotspots through CSS so click events aren't triggered.
-        document.body.setAttribute( 'data-disabledHotspots', true );
-        document.body.classList.add( mode );
-
-        //update the cursor
-        document.body.style.cursor = 'cell';
-
-    }
-    this.removeCommentMode = function( mode, node ){
-        _self[ mode ] = false;
-        _self.modeControls.querySelector( node ).classList.remove( 'active' );
-        document.body.setAttribute( 'data-disabledHotspots', false );
-        document.body.classList.remove( mode );
-        document.body.style.cursor = 'default';
-
-        setTimeout( function(){
-            document.querySelector( '.exitMode' ).remove();
-        }, 300 );
-    }
-    this.commentModeComplete = function(){
-        document.body.setAttribute( 'data-disabledHotspots', false );
-        document.body.classList.remove( 'addingAnnotation' );
-        document.body.classList.remove( 'addingComment' );
-        document.body.classList.remove( 'addingHotspot' );
-        document.body.classList.remove( 'addingGlobalHotspot' );
-        document.body.style.cursor = 'default';
-    }
 
     /*
         Find the slide and/or scrollZone parent for a given node
@@ -4679,10 +4717,7 @@
         }
 
         //close any open comments
-        const openComments = _self.wrap.querySelectorAll('.comment.active');
-        for( let c of openComments ){
-            c.remove();
-        }
+        _self.removeActiveComments();
 
         //close any open modals
         const openModals = document.querySelectorAll( '.modal' );

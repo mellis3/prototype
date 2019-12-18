@@ -124,14 +124,43 @@ function checkDirectory( directory, callback ){
 /*
     List contents of a directory
 */
-function listDirectory( directory, callback ){
+function listDirectory( directory, recursive = false, existingFiles = null, callback ){
     fs.readdir( directory, ( err, files ) => {
+
         //handling error
         if (err) {
             callback( err );
             return console.log('Unable to scan directory: ' + err);
-        } 
-        callback( files );
+        }
+
+        result = [];
+
+        //if recursive is true then list the contents of all directories.
+        if( recursive === true ){
+            for (var i in files){
+                var name = directory + '/' + files[i];
+
+                //if this is a directory
+                if( fs.statSync(name).isDirectory() ){
+                    listDirectory( name, true, files, null );
+                }
+                
+                //if this item is simply a file
+                else {
+                    result.push(name);
+                }
+            }
+        }
+        
+        //only list the contents of this directory
+        else{
+            result = files;
+        }
+
+        if( callback !== null ){
+            callback( result );
+        }
+        
     });
 }
 
@@ -1844,6 +1873,142 @@ app.post(
 );
 
 
+/*
+    Run an audit of the data and return analysis
+    Look for duplicate IDs / Names
+    Look for unused content
+    Look for unused images in the image folder
+*/
+app.post(
+    '/audit', (req, res) => {
+
+        const settings = req.body;
+        let result = {};
+
+        const file = `./public/data/${ settings.file }.json`;
+        const global = `./public/data/global.json`;
+
+        let slideNames = [];
+        let duplicateSlides = [];
+        let images = null;
+        let usedImages = [];
+        let unusedImages = [];
+
+        //get the global json file, we'll need to compare global hotspots
+        jsonReader(
+            global,
+            ( err, data ) => {
+
+                //file can't be retrieved errors
+                if( err ){
+                    updateLog( err, 'error' );
+                    result.status = 'error';
+                    result.error = err;
+                    res.send( result );
+                    return
+                }
+
+                //get the file
+                jsonReader(
+                    file,
+                    ( err, data ) => {
+
+                        //file can't be retrieved errors
+                        if( err ){
+                            updateLog( err, 'error' );
+                            result.status = 'error';
+                            result.error = err;
+                            res.send( result );
+                            return
+                        }
+
+                        //get a list of all the images in the directory
+                        listDirectory(
+                            `./public/img/${ settings.file }`,
+                            true,
+                            null,
+                            ( fileList ) => {
+                            images = fileList;
+
+
+                                
+                            //now we've got all the info we need, so let's do some analysis
+
+                            //loop through the slides
+                            for( let slide in data ){
+                                let d = data[ slide ];
+
+                                //see if this slide is in the slideNames array, if it is then its a duplicate, if not then push it into the slideNames
+                                if( slideNames.includes( d.name ) === true ){
+                                    console.log( 'duplicate slide:', d.name );
+                                    duplicateSlides.push( d );
+                                }else{
+                                    slideNames.push( d.name );
+                                }
+
+                                //push the img into the usedImages array
+                                if( typeof d.img !== 'undefined' ){
+
+                                    //only want to push in the file name not the path. 
+                                    //we only want to 
+                                    const imgURLPieces = d.img.split('/');
+                                    usedImages.push( imgURLPieces[ imgURLPieces.length - 1 ]  );
+                                }
+
+                                //loop through scrollzones
+
+
+                            }
+
+                            //send the duplicate slides back as part of the response
+                            result.duplicateSlides = duplicateSlides;
+
+                            //compare the list of all images to the list of used images
+                            for( let i of images ){
+                                if( usedImages.includes( i ) === false ){
+                                    console.log( 'unused image:', i );
+                                    unusedImages.push( i );
+                                }
+                            }
+
+                            //send the unused images back as part of the response
+                            result.unusedImages = unusedImages;
+
+                            res.send( result );
+
+
+                            
+                        });
+
+                        
+        
+
+                    }
+                );
+
+            }
+        );
+
+       
+        
+
+        //get a list of all the images
+
+        /*
+        if( r.status === 'error' ){
+            result.status = 'error';
+            result.error = r.error;
+        }else{
+            result.status = 'success';
+        }
+        */
+
+        
+
+    }
+);
+
+
 
 /*
     start the server and listen for stuff
@@ -1867,7 +2032,11 @@ app.listen(port, () => {
                     console.log( 'file exists' );
 
                     //check if file matches one of the existing data files
-                    listDirectory( './public/data', ( fileList ) => {
+                    listDirectory(
+                        './public/data',
+                        false,
+                        null,
+                        ( fileList ) => {
                         for( let f of fileList ){
                             if( f === filename ){
                                 mergeFiles( f, dir + '/' + filename );

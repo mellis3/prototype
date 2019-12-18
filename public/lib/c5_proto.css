@@ -41,6 +41,34 @@
     /* shadows */
     --shadow-large:                 0 8.2px 5.3px rgba(0, 0, 0, 0.024), 0 26.8px 17.9px rgba(0, 0, 0, 0.036), 0 45px 80px rgba(0, 0, 0, 0.07);
 
+    /* scrollbars */
+    --scrollbar-track-color:            transparent;
+    --scrollbar-size:                   0.5rem;
+    --scrollbar-minlength:              1.5rem;
+
+}
+
+::-webkit-scrollbar{
+    width: var( --scrollbar-size );
+    height: var( --scrollbar-size );
+}
+::-webkit-scrollbar-track{
+    background-color: var( --scrollbar-track-color );
+}
+::-webkit-scrollbar-thumb{
+    background-color: var( --color-mediumLight );
+    border-radius: 5em;
+    transition: background-color 0.3s;
+}
+    ::-webkit-scrollbar-thumb:hover{
+        background-color: var( --color-medium );
+        border-radius: 5em;
+    }
+::-webkit-scrollbar-thumb:vertical{
+    min-height: var( --scrollbar-minlength );
+}
+::-webkit-scrollbar-thumb:horizontal{
+    min-height: var( --scrollbar-minlength );
 }
 
 * {
@@ -459,6 +487,11 @@ body.addingHotspot::after{
     .commentDrawer .comment:not( .expanded ):hover::before {
         transform: translate(-50%, -50%) scale(1.25);
     }
+    .commentDrawer .comment[data-resolved='true']:not( .expanded )::after{
+        width: 10px !important;
+        height: 5px !important;
+        transform: rotate(128deg) translate( 0%, 97% );
+    }
 
     .commentDrawer .comment .ql-container{
         font-size: inherit;
@@ -711,6 +744,10 @@ body.addingHotspot::after{
     overflow: auto;
     overflow-y: overlay;
     overflow-x: hidden;
+
+    /*firefox scrollbars*/
+    scrollbar-width: thin; 
+    scrollbar-color: var( --color-mediumLight ) var(--scrollbar-track-color);
 }
 
 /* 
@@ -838,7 +875,7 @@ body.addingHotspot::after{
     font-size: 0.75em;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var( --color-medium );
+    color: var( --color-light );
 }
 
 .slideDrawer_item {
@@ -880,6 +917,7 @@ body.addingHotspot::after{
 
 .slideDrawer.open .slideDrawer_trigger {
     transform: translateY(-274px);
+    z-index: 1;
 }
 
 .slideDrawer.open .slideDrawer_trigger::after {
