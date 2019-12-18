@@ -225,7 +225,12 @@
         }
 
         //hide active item
-        _self.hideActive( context );
+        const activeItems = context.querySelectorAll('.item.active');
+        if (activeItems.length > 0) {
+            for (let i of activeItems) {
+                i.classList.remove('active');
+            }
+        }
 
         //close any open comment modals
         _self.removeActiveComments();
@@ -4225,21 +4230,8 @@
 
         console.log( comments );
 
-        const slideName = `all_${ file }_comments`;
-
-        //check if this slide already exists or create it
-        if( _self.wrap.querySelector( `#${ slideName }`) !== null ){
-            _self.hideActive();
-            _self.wrap.querySelector( `#${ slideName }`).classList.add( 'active' );
-
-            //push into browser history
-             _self.navigation.write( slideName, _self.mainContext );
-
-        }
         //add a slide for this
-        else{
-            _self.createSlide( comments, slideName, 'allComments' );
-        }
+        _self.createSlide( comments, `all_${ file }_comments`, 'allComments' );
     }
 
     /*
@@ -4301,21 +4293,6 @@
     }
 
     /*
-        hide all active slides
-    */
-    this.hideActive = function( context ){
-        if( typeof context === 'undefined' ){
-            context = _self.wrap;
-        }
-        const activeItems = context.querySelectorAll('.item.active');
-        if( activeItems.length > 0 ){
-            for (let i of activeItems) {
-                i.classList.remove('active');
-            }
-        }
-    }
-
-    /*
         Create a slide programmatically when needed
         This slide does not get saved into the data and only exists temporarily.
     */
@@ -4333,7 +4310,12 @@
         }
 
         //hide any active slides
-        _self.hideActive();
+        const activeItems = _self.wrap.querySelectorAll('.item.active');
+        if( activeItems.length > 0 ){
+            for (let i of activeItems) {
+                i.classList.remove('active');
+            }
+        }
 
         //append the new slide
         _self.node( slideData, _self.wrap, _self.mainContext, false );
@@ -4444,10 +4426,7 @@
                 
                 slide.innerHTML = `
                     <div class='slideHeader'>
-                        <h1 class='slideHeader--title'>
-                            <a class="backArrow" href="javascript:history.back()">Go Back</a>
-                            ${ title }
-                        </h1>
+                        <h1 class='slideHeader--title'>${ title }</h1>
                     </div>
                     <div class="controls">
                         <div class="features_sort">

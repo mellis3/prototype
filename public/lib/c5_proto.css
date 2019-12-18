@@ -996,6 +996,38 @@ body.addingHotspot::after{
     color: var( --color-mediumLight );
     cursor: pointer;
 }
+.backArrow{
+    position: relative;
+    font-size: 0;
+}
+    .backArrow::before, .backArrow::after{
+        content:"";
+        position: absolute;
+        transition: transform 0.3s;
+    }
+    .backArrow::before{
+        top: 50%;
+        left: 0;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-top: solid 2px var( --color-medium );
+        border-left: solid 2px var( --color-medium );
+        transform: translateY( -50% ) rotate( -45deg );
+    }
+    .backArrow::after{
+        top: 50%;
+        left: 0;
+        width: 1.25rem;
+        height: 2px;
+        background: var( --color-medium );
+        transform: translateY( -50% );
+    }
+    .backArrow:hover::before{
+        transform: translate( -0.25rem, -50% ) rotate( -45deg );
+    }
+    .backArrow:hover::after{
+        transform: translate( -0.25rem, -50% );
+    }
 .exitMode{
     position: fixed;
     top: 0;
@@ -1474,18 +1506,27 @@ input[type='checkbox']{
 
 /************ dynamic slides **************/
 .item.dynamic{
-    width: 100vw;
+    display: none;
+    width: 99vw; /* for some reason 100vw causes an horz. overflow */
     left: 50%;
     transform: translateX(-50%);
 }
+    .item.dynamic.active{
+        display: block;
+    }
     .item.dynamic .slideHeader{
         border-bottom: solid 1px var( --border-color );
     }
         .item.dynamic .slideHeader--title{
+            display: flex;
+            align-items: center;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 3rem;
+            padding: 2rem 3rem 2rem 4rem;
             text-transform: capitalize;
+        }
+        .item.dynamic .slideHeader--title .backArrow{
+            transform: translateX( -2.25rem );
         }
 
     .item.dynamic .controls {
