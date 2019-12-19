@@ -3461,7 +3461,7 @@
                     _self.toast( data.error, 'error' );
                 }else{
                     _self.toast( 'hotspot updated!', 'success' );
-                    if( typeof callback === 'funnction' ){
+                    if( typeof callback === 'function' ){
                         callback();
                     }
                 }
