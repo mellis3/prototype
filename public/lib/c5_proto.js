@@ -63,6 +63,25 @@
     _self.activeUser = null;
     _self.activeUserAuth = false;
 
+    //functions available in each view mode
+    //the order below is how they will be rendered in the UI
+    //for each of the options below an SVG will need to be added to this.addModeControl function
+    //for each of the options below a handler function will need to be created for when the icon is clicked, check out this.modeControlHanlder_addAnnotation as a template
+    _self.viewModeControls = [
+        'addComment',
+        'overflow'
+    ];
+    _self.buildModeControls = [
+        'addSlide',
+        'addScrollZone',
+        'slideInfo',
+        'addAnnotation',
+        'addHotspot',
+        'addToDrawer',
+        'toggleBuildMode',
+        'overflow'
+    ]
+
 
 
 
@@ -306,13 +325,17 @@
                 }
             }
         }
-       
+
+        let img = el.img;
+        if( typeof el.img === 'undefined' || el.img === null ){
+            img = 'no-image.png';
+        }
 
         const node = document.createElement('div');
         node.id = el.name;
         node.className = "item active";
         node.innerHTML = `
-            ${ el.img === null ? '' : `<img class="image" src="img/${ el.img }" />` }
+            <img class="image" src="img/${ img }" />
             <div class="hotspots"></div>
             <div class="comments"></div>
             <div class="metadata">
@@ -1769,10 +1792,14 @@
         
         //for every other regular scrollzone
         else{
+            let img = s.img;
+            if( typeof img === 'undefined' || img === null ){
+                img = 'no-image.png';
+            }
             zone.innerHTML = `
                 <div class="scrollZone_inner">
                     <div class="scrollZone_inner_fullHeight">
-                        <img class="image" src="img/${ s.img }" />
+                        <img class="image" src="img/${ img }" />
                         <div class="hotspots"></div>
                         <div class="comments"></div>
                     </div>
@@ -1894,6 +1921,186 @@
                 }
             }
 
+            //if in build mode append a way to modify the scrollZone
+            if( _self.mode === 'build' ){
+                const zoneDetails = document.createElement('div');
+                zoneDetails.className = "scrollZone_details";
+                zoneDetails.innerHTML = `
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <title>icon_overflow</title>
+                        <g fill-rule="evenodd">
+                            <path d="M14,18 C12.9,18 12,18.9 12,20 C12,21.1 12.9,22 14,22 C15.1,22 16,21.1 16,20 C16,18.9 15.1,18 14,18 Z M26,18 C24.9,18 24,18.9 24,20 C24,21.1 24.9,22 26,22 C27.1,22 28,21.1 28,20 C28,18.9 27.1,18 26,18 Z M20,18 C18.9,18 18,18.9 18,20 C18,21.1 18.9,22 20,22 C21.1,22 22,21.1 22,20 C22,18.9 21.1,18 20,18 Z" fill-rule="nonzero"></path>
+                        </g>
+                    </svg>
+                `;
+
+                zone.appendChild( zoneDetails );
+
+                zoneDetails.onclick = function(){
+                    event.stopPropagation();
+                    console.log( 'show scrollzone details' );
+
+                    const modalW = 500;
+                    const modalH = 660;
+                    let x = event.clientX;
+                    if( ( x + modalW ) > window.innerWidth ){
+                        x = x - modalW < 0 ? 10 : x - modalW;
+                    }
+                    let y = event.clientY;
+                    if( ( y + modalH ) > window.innerHeight ){
+                        y = y - modalH < 0 ? 10 : y - modalH;
+                    }
+
+                    _self.modal(
+                        'ScrollZone Details',
+                        `<div class="modal-input">
+                            <label>Name</label>
+                            <input name="id" type="text" value="${ s.id }" />
+                            <span class="helpText">No spaces, use underscores instead of a space</span>
+                        </div>
+                        <div class="modal-input">
+                            <label>X Position</label>
+                            <input name="x" type="text" value="${ s.x }" />
+                        </div>
+                        <div class="modal-input">
+                            <label>Y Position</label>
+                            <input name="y" type="text" value="${ s.y }" />
+                        </div>
+                        <div class="modal-input">
+                            <label>Width</label>
+                            <input name="w" type="text" value="${ s.w }" />
+                        </div>
+                        <div class="modal-input">
+                            <label>Height</label>
+                            <input name="h" type="text" value="${ s.h }" />
+                        </div>
+                        <div class="modal-input">
+                            <label>Image</label>
+                            <input name="img" type="text" value="${ s.img }" />
+                            <span class="helpText">Assumes public/img/ as the starting directory</span>
+                        </div>
+                        <div class="modal-input">
+                            <label>Max. Image Width</label>
+                            <input name="maxImgWidth" type="text" value="${ typeof s.maxImgWidth !== 'undefined' ? s.maxImgWidth : '' }" placeholder="enter a max width (optional)" />
+                            <span class="helpText">Optional. enter a max width for the image. Scrollzone can be larger. Image will be centered within the scroll zone</span>
+                        </div>
+                        <div class="actions">
+                            <button
+                                id="deleteScrollZone"
+                                class="button button--icon destructive"
+                            >
+                                <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <g fill-rule="evenodd">
+                                        <path d="M14,27 C14,28.1 14.9,29 16,29 L24,29 C25.1,29 26,28.1 26,27 L26,15 L14,15 L14,27 Z M16,17 L24,17 L24,27 L16,27 L16,17 Z M23.5,12 L22.5,11 L17.5,11 L16.5,12 L13,12 L13,14 L27,14 L27,12 L23.5,12 Z" fill-rule="nonzero"></path>
+                                    </g>
+                                </svg>
+                            </button>
+                            <button
+                                id="updateScrollZone"
+                                class="button"
+                            >Update</button>
+                        </div>
+                        `,
+                        {
+                            w: modalW,
+                            h: modalH,
+                            x: x,
+                            y: y
+                        },
+                        'scrollZoneDetails'
+                    );
+
+                    const modal = document.querySelector( '.modal#scrollZoneDetails' );
+                    modal.querySelector( '#updateScrollZone' ).onclick = function(){
+
+                        //start with the existing scrollzone data so we inherit all the hotspots, comments etc.
+                        let newScrollZoneData = s;
+
+                        //update data from the modal as it may have changed.
+                        //name
+                        newScrollZoneData.id = modal.querySelector( 'input[name="id"]' ).value;
+
+                        //image
+                        newScrollZoneData.img = modal.querySelector( 'input[name="img"]' ).value;
+
+                        //position and size
+                        newScrollZoneData.x = modal.querySelector( 'input[name="x"]' ).value;
+                        newScrollZoneData.y = modal.querySelector( 'input[name="y"]' ).value;
+                        newScrollZoneData.w = modal.querySelector( 'input[name="w"]' ).value;
+                        newScrollZoneData.h = modal.querySelector( 'input[name="h"]' ).value;
+
+                        //if a max image width is specified - it's optional
+                        if( modal.querySelector( 'input[name="maxImgWidth"]' ).value !== '' ){
+                            newScrollZoneData.maxImgWidth = modal.querySelector( 'input[name="maxImgWidth"]' ).value;
+                        }
+
+                        //add some info about the form to the scrollzone data so we can find the form in the backend
+                        newScrollZoneData.parent = {
+                            file: nodeData.file,
+                            name: nodeData.name
+                        }
+
+                        //post to the DB
+                        _self.post(
+                            'update/scrollZone',
+                            newScrollZoneData,
+                            function( data ){
+                                if( data.status === 'error' ){
+                                    _self.toast( data.error, 'error' );
+                                }else{
+                                    _self.toast( 'scrollzone updated!', 'success' );
+
+                                    //remove the modal
+                                    _self.closeModal( modal );
+
+                                    //update the scrollzone in the UI
+                                    zone.setAttribute(
+                                        "style",
+                                        `width: ${ newScrollZoneData.w }px;
+                                        height: ${ newScrollZoneData.h }px;
+                                        top: ${ newScrollZoneData.y }px;
+                                        left: ${ newScrollZoneData.x }px;`
+                                    );
+
+                                    //update the image
+                                    zone.querySelector( '.image' ).setAttribute( "src", `img/${ newScrollZoneData.img }` );
+                                }
+                            }
+                        );
+                    }
+
+                    modal.querySelector( '#deleteScrollZone' ).onclick = function(){
+                    
+                        let scrollZoneData = s;
+
+                        //add some info about the form to the scrollzone data so we can find the form in the backend
+                        scrollZoneData.parent = {
+                            file: nodeData.file,
+                            name: nodeData.name
+                        }
+
+                        _self.post(
+                            'delete/scrollZone',
+                            scrollZoneData,
+                            function( data ){
+                                if( data.status === 'error' ){
+                                    _self.toast( data.error, 'error' );
+                                }else{
+                                    _self.toast( 'scrollzone deleted', 'success' );
+
+                                    //remove the zone from the UI
+                                    zone.remove();
+
+                                    //close the modal
+                                    _self.closeModal( modal );
+                                
+                                }
+                            }
+                        );
+                    }
+                }
+            }
+
             //fetch the image and get the 
             this.getImageModData( node, s );
         }
@@ -1910,6 +2117,10 @@
 
         //if running locally skip this
         if( location.protocol === 'file:' ){
+            return false;
+        }
+
+        if( typeof data.img === 'undefined' ){
             return false;
         }
 
@@ -2066,6 +2277,7 @@
         Create a modal
     */
     this.modal = function( title, content, position = null, id ){
+        console.log( 'create modal' );
         const node = document.createElement('div');
         node.className = `modal`;
         node.innerHTML = `
@@ -2101,6 +2313,8 @@
             );
         }
         document.querySelector( 'body' ).appendChild( node );
+
+        console.log( node );
 
         _self.currentModal = id;
 
@@ -2232,12 +2446,9 @@
 
         document.querySelector( 'body' ).setAttribute( 'data-mode', 'build' );
 
-        //determine which control icons to reveal for this mode, add each to the controls node
-        let controls = [ 'addAnnotation', 'addHotspot', 'toggleBuildMode', 'addToDrawer', 'overflow' ];
-
         //loop through the controls array and add each option to the control box.
         _self.modeControls.innerHTML = null;
-        for( let c of controls ){
+        for( let c of _self.buildModeControls ){
             _self.modeControls.appendChild( _self.addModeControl( c ) );
         }
         _self.modeControls.querySelector( '#toggleBuildMode' ).classList.add( 'active' );
@@ -2256,7 +2467,6 @@
         document.querySelector( 'body' ).setAttribute( 'data-mode', 'view');
 
         //determine which control icons to reveal for this mode, add each to the controls node - for view mode we start with only the add comment
-        let controls = [ 'addComment', 'overflow' ];
         let ableToAcessBuildMode = false;
 
         //if there is an active user already then see if that user can access build mode or not, if yes add the build mode toggle to the controls array above before iterating below
@@ -2265,20 +2475,20 @@
 
             if( typeof user !== 'undefined' ){
                 if( user.access === 'build' ){
-                    controls.splice(1, 0, 'toggleBuildMode' ); //add the build toggle to the controls in the 2nd position
+                    _self.viewModeControls.splice(1, 0, 'toggleBuildMode' ); //add the build toggle to the controls in the 2nd position
                     ableToAcessBuildMode = true;
                 }
             }
         }
         //if we don't know the active user still show the build control toggle so we can access the login 
         else{
-            controls.push( 'toggleBuildMode' );
+            _self.viewModeControls.push( 'toggleBuildMode' );
             ableToAcessBuildMode = true;
         }
         
         //loop through the controls array and add each option to the control box.
         _self.modeControls.innerHTML = null;
-        for( let c of controls ){
+        for( let c of _self.viewModeControls ){
             _self.modeControls.appendChild( _self.addModeControl( c ) );
         }
 
@@ -2348,9 +2558,39 @@
             case 'overflow':
                 icon = `
                     <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <title>icon_info</title>
+                        <title>icon_overflow</title>
                         <g fill-rule="evenodd">
                             <path d="M14,18 C12.9,18 12,18.9 12,20 C12,21.1 12.9,22 14,22 C15.1,22 16,21.1 16,20 C16,18.9 15.1,18 14,18 Z M26,18 C24.9,18 24,18.9 24,20 C24,21.1 24.9,22 26,22 C27.1,22 28,21.1 28,20 C28,18.9 27.1,18 26,18 Z M20,18 C18.9,18 18,18.9 18,20 C18,21.1 18.9,22 20,22 C21.1,22 22,21.1 22,20 C22,18.9 21.1,18 20,18 Z" fill-rule="nonzero"></path>
+                        </g>
+                    </svg>
+                `
+                break;
+            case 'addSlide':
+                icon = `
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <title>icon_newSlide</title>
+                        <g fill-rule="evenodd">
+                            <path d="M27,27 L13,27 L13,13 L22,13 L22,11 L13,11 C11.9,11 11,11.9 11,13 L11,27 C11,28.1 11.9,29 13,29 L27,29 C28.1,29 29,28.1 29,27 L29,18 L27,18 L27,27 Z M19.21,23.83 L17.25,21.47 L14.5,25 L25.5,25 L21.96,20.29 L19.21,23.83 Z M29,11 L29,8 L27,8 L27,11 L24,11 C24.01,11.01 24,13 24,13 L27,13 L27,15.99 C27.01,16 29,15.99 29,15.99 L29,13 L32,13 L32,11 L29,11 Z" fill-rule="nonzero"></path>
+                        </g>
+                    </svg>
+                `
+                break;
+            case 'slideInfo':
+                icon = `
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <title>icon_newSlide</title>
+                        <g fill-rule="evenodd">
+                            <path d="M19,15 L21,15 L21,17 L19,17 L19,15 Z M19,19 L21,19 L21,25 L19,25 L19,19 Z M20,10 C14.48,10 10,14.48 10,20 C10,25.52 14.48,30 20,30 C25.52,30 30,25.52 30,20 C30,14.48 25.52,10 20,10 Z M20,28 C15.59,28 12,24.41 12,20 C12,15.59 15.59,12 20,12 C24.41,12 28,15.59 28,20 C28,24.41 24.41,28 20,28 Z" fill-rule="nonzero"></path>
+                        </g>
+                    </svg>
+                `
+                break;
+            case 'addScrollZone':
+                icon = `
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <title>icon_newSlide</title>
+                        <g fill-rule="evenodd">
+                            <path d="M13.5,14 L16,14 L12.5,10.5 L9,14 L11.5,14 L11.5,24 L9,24 L12.5,27.5 L16,24 L13.5,24 L13.5,14 Z M17.5,12 L17.5,14 L23.5,14 L23.5,12 L17.5,12 Z M17.5,26 L29.5,26 L29.5,24 L17.5,24 L17.5,26 Z M29.5,18 L29.5,20 L17.5,20 L17.5,18 L29.5,18 Z M30.5,9 L30.5,12 L33.5,12 L33.5,14 L30.5,14 L30.5,16.99 C30.5,16.99 28.51,17 28.5,16.99 L28.5,16.99 L28.5,14 L25.5,14 C25.5,14 25.51,12.01 25.5,12 L25.5,12 L28.5,12 L28.5,9 L30.5,9 Z" fill-rule="nonzero"></path>
                         </g>
                     </svg>
                 `
@@ -2760,11 +3000,6 @@
             _self.enableViewMode();
         }
     }
-
-
-    /*
-        Overflow menu in the actions bar
-    */
     this.modeControlHandler_overflow = function(){
 
         if( _self.currentModal === 'overflow' ){
@@ -2950,15 +3185,280 @@
                 }
             });
         }
+    }
+    this.modeControlHandler_slideInfo = function(){
+        console.log( 'show slide info' );
+
+        if( _self.currentModal === 'slideInfo' ){
+            return false;
+        }
+
+        //get the slide data
+        const slide = _self.activeSlide;
+
+        //launch the modal
+        _self.modal(
+            'Slide Details',
+            `<div class="modal-input">
+                <label>ID</label>
+                <input name="id" type="text" value="${ slide.id }" disabled />
+                <span class="helpText">Cannot modify</span>
+            </div>
+            <div class="modal-input">
+                <label>Name</label>
+                <input name="name" type="text" value="${ slide.name }" placeholder="enter a unique name for this slide" disabled />
+                <span class="helpText">No spaces, use underscores instead of a space</span>
+            </div>
+            <div class="modal-input">
+                <label>Image</label>
+                <input name="img" type="text" value="${ slide.img }" placeholder="enter the path to an image" />
+                <span class="helpText">Assumes root folder of public/img/</span>
+            </div>
+            <div class="actions">
+                <button
+                    id="deleteSlide"
+                    class="button button--icon destructive"
+                >
+                    <svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g fill-rule="evenodd">
+                            <path d="M14,27 C14,28.1 14.9,29 16,29 L24,29 C25.1,29 26,28.1 26,27 L26,15 L14,15 L14,27 Z M16,17 L24,17 L24,27 L16,27 L16,17 Z M23.5,12 L22.5,11 L17.5,11 L16.5,12 L13,12 L13,14 L27,14 L27,12 L23.5,12 Z" fill-rule="nonzero"></path>
+                        </g>
+                    </svg>
+                </button>
+                <button
+                    id="updateSlide"
+                    class="button"
+                >Update</button>
+            </div>`,
+            null,
+            'slideInfo'
+        );
+
+        const modal = document.querySelector( '.modal#slideInfo' );
+        modal.querySelector( '#updateSlide' ).onclick = function(){
+            let newSlideData = slide;
+
+            //name = key in the object, not sure that can be updated.
+            //newSlideData.name = modal.querySelector( 'input[name="name"]' ).value;
+
+            newSlideData.img = modal.querySelector( 'input[name="img"]' ).value;
+
+            _self.post(
+                'update/slide',
+                newSlideData,
+                function( data ){
+                    if( data.status === 'error' ){
+                        _self.toast( data.error, 'error' );
+                    }else{
+                        _self.toast( 'slide updated!', 'success' );
+                    }
+                }
+            );
+        }
+
+        modal.querySelector( '#deleteSlide' ).onclick = function(){
+          
+            _self.post(
+                'delete/slide',
+                slide,
+                function( data ){
+                    if( data.status === 'error' ){
+                        _self.toast( data.error, 'error' );
+                    }else{
+                        _self.toast( 'slide deleted', 'success' );
+
+                        //navigate somewhere
+                        setTimeout( function(){
+                            window.location.reload();
+                        }, 2500 );
+                       
+                    }
+                }
+            );
+        }
+
+    }
+    this.modeControlHandler_addSlide = function(){
+        console.log( 'add a new slide' );
+
+        if( _self.currentModal === 'newSlideInfo' ){
+            return false;
+        }
+
+        //in the future allow adding new slides to overlays.
+        let context = _self.mainContext;
+
+        let newSlide = {
+            "id": proto.createGuiID(),
+            "name": null, 
+            "img": null, 
+            "status": "conceptual"
+        }
+
+        _self.modal(
+            'New Slide Details',
+            `<div class="modal-input">
+                <label>File</label>
+                <input name="file" type="text" value="" placeholder="enter a file to add this slide to" />
+                <span class="helpText">Enter the name of one of the files in the data folder (example: issue). Do not add an extension, .json will be assumed. This slide will be added to that file</span>
+            </div>
+            <div class="modal-input">
+                <label>ID</label>
+                <input name="id" type="text" value="${ newSlide.id }" disabled />
+                <span class="helpText">Cannot modify</span>
+            </div>
+            <div class="modal-input">
+                <label>Name</label>
+                <input name="name" type="text" placeholder="enter a unique name for this slide" />
+                <span class="helpText">No spaces, use underscores instead of a space</span>
+            </div>
+            <div class="modal-input">
+                <label>Image</label>
+                <input name="img" type="text" value="" placeholder="enter the path to an image" />
+                <span class="helpText">Assumes root folder of public/img/</span>
+            </div>
+            <div class="actions">
+                <button
+                    id="addNewSlide"
+                    class="button"
+                >Add New Slide</button>
+            </div>`,
+            null,
+            'newSlideInfo'
+        );
+
+        const modal = document.querySelector( '.modal#newSlideInfo' );
+        modal.querySelector( '#addNewSlide' ).onclick = function(){
+
+            newSlide.file = modal.querySelector( 'input[name="file"]' ).value;
+            newSlide.name = modal.querySelector( 'input[name="name"]' ).value;
+            newSlide.img = modal.querySelector( 'input[name="img"]' ).value;
+
+            _self.post(
+                'add/slide',
+                newSlide,
+                function( data ){
+                    if( data.status === 'error' ){
+                        _self.toast( data.error, 'error' );
+                    }else{
+                        _self.toast( 'new slide added!', 'success' );
+
+                        //close the modal
+                        _self.closeModal( modal );
+
+                        //navigate to the new slide
+                        window.location.href = `?id=${ newSlide.name }&context=${ context }`;
+                    }
+                }
+            );
+        }
+    }
+    this.modeControlHandler_addScrollZone = function(){
+        console.log( 'add a scrollZone to this slide' );
+
+        if( _self.currentModal === 'newScrollZoneInfo' ){
+            return false;
+        }
+
+        //in the future allow adding new slides to overlays.
+        let context = _self.mainContext;
+        let wrap = _self.wrap;
+
+        let newScrollZone = {
+            id: null,
+            x: 350,
+            y: 321,
+            w: 500,
+            h: 603,
+            img: null,
+            hotspots: [],
+            comments: [],
+            layers: []
+        }
+
+        _self.modal(
+            'New ScrollZone Details',
+            `<div class="modal-input">
+                <label>File</label>
+                <input name="file" type="text" value="${ _self.activeSlide.file }" disabled />
+            </div>
+            <div class="modal-input">
+                <label>Slide Name</label>
+                <input name="slidename" type="text" value="${ _self.activeSlide.name }" disabled />
+            </div>
+            <span class="helpText" style="margin:1rem 0 0.7rem">Information about the ScrollZone</span>
+            <div class="modal-input">
+                <label>Name</label>
+                <input name="name" type="text" value="" placeholder="enter a unique readable name" />
+                <span class="helpText">No spaces, use underscores instead of a space</span>
+            </div>
+            <div class="actions">
+                <button
+                    id="addNewScrollZone"
+                    class="button"
+                >Add New ScrollZone</button>
+            </div>`,
+            null,
+            'newScrollZoneInfo'
+        );
+
+        const modal = document.querySelector( '.modal#newScrollZoneInfo' );
+        modal.querySelector( '#addNewScrollZone' ).onclick = function(){
+
+            newScrollZone.id = modal.querySelector( 'input[name="name"]' ).value;
 
 
+            //add some info about the form to the scrollzone data so we can find the form in the backend
+            newScrollZone.parent = {
+                file: _self.activeSlide.file,
+                name: _self.activeSlide.name
+            }
+
+            //send to the DB
+            _self.post(
+                'add/scrollZone',
+                newScrollZone,
+                function( data ){
+                    if( data.status === 'error' ){
+                        _self.toast( data.error, 'error' );
+                    }else{
+                        _self.toast( 'scrollzone added', 'success' );
+
+                        //if current slide does not contain a scrollZones array
+                        if( typeof _self.activeSlide.scrollZones === 'undefined' ){
+                            _self.activeSlide.scrollZones = [];
+                        }
+
+                        //add the scroll zone to the data
+                        _self.activeSlide.scrollZones.push( newScrollZone );
+
+                        //render the scrollzone on the screen
+                        const slideNode = _self.wrap.querySelector( `#${ _self.activeSlide.name }` )
+
+                        slideNode.appendChild(
+                            _self.scrollZone(
+                                newScrollZone,
+                                wrap,
+                                slideNode,
+                                _self.activeSlide
+                            )
+                        );
+
+                        //close the modal
+                        _self.closeModal( modal );
+                    
+                    }
+                }
+            );
+            
+        }
     }
 
 
     /*
         Modal to request auth for access to build mode
     */
-   this.authModal = function(){
+    this.authModal = function(){
         //load the list of users who can access build mode.
         _self.get( 'users', ( users ) => {
             console.log( users );

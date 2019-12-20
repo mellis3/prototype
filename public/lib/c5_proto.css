@@ -361,6 +361,7 @@ body.addingHotspot::after{
     border: solid 1px var( --color-medium );
 }
 
+
 /* status popup */
 .modal .statusOptions{
     color: var( --color-mediumLight );
@@ -763,6 +764,19 @@ body.addingHotspot::after{
     position: absolute;
     z-index: 1000;
 }
+
+.scrollZone_details{
+    position: absolute;
+    bottom: 0.5em;
+    right: 0.5em;
+    background: var( --color-medium );
+    border-radius: 50%;
+    cursor: pointer;
+}
+    .scrollZone_details svg{
+        display: block;
+        fill: var( --color-darker );
+    }
 
 .overlay {
     display: none;
@@ -1418,6 +1432,9 @@ body.addingHotspot::after{
     color: var( --color-mediumLight );
     padding: 0.5em 0;
 }
+    .modal-input .helpText{
+        margin-left: 0.5em;
+    }
 
 select {
     position: relative;
@@ -1433,6 +1450,9 @@ label{
     font-size: 11px;
     color: var( --color-medium );
 }
+    .modal-input label{
+        margin-left: 0.5em;
+    }
 
 label + input, label + select {
     margin-top: 2px;
@@ -1484,6 +1504,10 @@ input[type='checkbox']{
         background: none;
         border-top: solid 2px white;
         border-right: solid 2px white;
+    }
+    input:disabled{
+        background: var( --color-extraLight );
+        cursor: not-allowed;
     }
 
 
