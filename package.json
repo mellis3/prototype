@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "require-reload": "^0.2.2"
   },
   "devDependencies": {},
